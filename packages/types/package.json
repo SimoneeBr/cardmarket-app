@@ -1,0 +1,14 @@
+{
+  "name": "@cmc/types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "gen": "cd ../../apps/api && .venv/bin/python -m app.scripts.export_openapi > ../../packages/types/openapi.json && cd ../../packages/types && openapi-typescript openapi.json -o src/api.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0"
+  }
+}

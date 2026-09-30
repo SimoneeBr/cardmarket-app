@@ -1,0 +1,32 @@
+# Production overlay:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Requires in .env: ENVIRONMENT=production, COOKIE_SECURE=true, DOMAIN, ACME_EMAIL,
+# strong POSTGRES_PASSWORD and AGENT_API_TOKEN (>= 32 chars).
+services:
+  api:
+    ports: !reset []
+    environment:
+      FORWARDED_ALLOW_IPS: "*"
+  web:
+    ports: !reset []
+  agent:
+    ports: !override
+      - "127.0.0.1:${PAIRING_VNC_PORT:-6080}:6080"
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [web, api]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+      ACME_AGREE: "true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  caddy-data:
+  caddy-config:

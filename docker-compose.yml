@@ -1,0 +1,114 @@
+# Cardmarket Companion - local / single-host stack.
+#
+#   cp .env.example .env    # optional: defaults work for local mock mode
+#   docker compose up --build
+#
+# Web app: http://localhost:3000   API docs: http://localhost:8000/api/docs
+name: cardmarket-companion
+
+x-common-env: &common-env
+  ENVIRONMENT: ${ENVIRONMENT:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  LOG_FORMAT: ${LOG_FORMAT:-json}
+  MOCK_CARDMARKET: ${MOCK_CARDMARKET:-true}
+  AGENT_API_TOKEN: ${AGENT_API_TOKEN:-dev-only-agent-token-change-me-0123456789}
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cmc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cmc-dev-password}
+      POSTGRES_DB: ${POSTGRES_DB:-cmc}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/api.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cmc}:${POSTGRES_PASSWORD:-cmc-dev-password}@postgres:5432/${POSTGRES_DB:-cmc}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-45}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@example.com}
+      PAIRING_VIEWER_URL: ${PAIRING_VIEWER_URL:-}
+      SEED_ON_START: ${SEED_ON_START:-true}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      RETENTION_MESSAGES_DAYS: ${RETENTION_MESSAGES_DAYS:-365}
+      ARTIFACTS_DIR: /data/artifacts
+    volumes:
+      - agent-artifacts:/data/artifacts:ro
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+  agent:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/agent.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      <<: *common-env
+      API_URL: http://api:8000
+      AGENT_ID: ${AGENT_ID:-agent-main}
+      HEADLESS: ${AGENT_HEADLESS:-true}
+      BROWSER_PROFILE_DIR: /data/browser-profile
+      ARTIFACTS_DIR: /data/artifacts
+      MOCK_STATE_FILE: /data/mock/state.json
+      MOCK_AUTO_PAIR: ${MOCK_AUTO_PAIR:-true}
+      MOCK_ACTIVITY_RATE: ${MOCK_ACTIVITY_RATE:-0.35}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-45}
+      HEARTBEAT_SECONDS: ${HEARTBEAT_SECONDS:-15}
+      TRACE_ON_FAILURE: ${TRACE_ON_FAILURE:-false}
+      DEBUG_CAPTURE_HTML: ${DEBUG_CAPTURE_HTML:-false}
+      CARDMARKET_LANGUAGE: ${CARDMARKET_LANGUAGE:-it}
+      CARDMARKET_GAME: ${CARDMARKET_GAME:-Magic}
+      PAIRING_TIMEOUT_SECONDS: ${PAIRING_TIMEOUT_SECONDS:-600}
+      PAIRING_VNC_ENABLED: ${PAIRING_VNC_ENABLED:-false}
+      PAIRING_VNC_PASSWORD: ${PAIRING_VNC_PASSWORD:-}
+    volumes:
+      # MUST be persistent: it holds the Cardmarket session (see docs/cardmarket-agent.md)
+      - browser-profile:/data/browser-profile
+      - agent-artifacts:/data/artifacts
+      - mock-state:/data/mock
+    ports:
+      # noVNC viewer for manual pairing: bound to localhost only (use an SSH tunnel remotely)
+      - "127.0.0.1:${PAIRING_VNC_PORT:-6080}:6080"
+    shm_size: 1gb
+    stop_grace_period: 30s
+
+  web:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/web.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+
+volumes:
+  pgdata:
+  browser-profile:
+  agent-artifacts:
+  mock-state:

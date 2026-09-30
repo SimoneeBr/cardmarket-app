@@ -1,0 +1,56 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_USER: cmc, POSTGRES_PASSWORD: cmc, POSTGRES_DB: cmc_test }
+        ports: ["55432:5432"]
+        options: --health-cmd "pg_isready -U cmc" --health-interval 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Install
+        run: |
+          for app in api agent; do
+            python -m venv apps/$app/.venv
+            apps/$app/.venv/bin/pip install -e packages/shared -e "apps/$app[dev]"
+          done
+          apps/api/.venv/bin/pip install -e apps/agent
+          apps/agent/.venv/bin/playwright install --with-deps chromium
+      - name: API
+        working-directory: apps/api
+        run: .venv/bin/ruff check . && .venv/bin/ruff format --check . && .venv/bin/mypy app && .venv/bin/pytest
+      - name: Agent
+        working-directory: apps/agent
+        run: .venv/bin/ruff check . && .venv/bin/ruff format --check . && .venv/bin/mypy agent && .venv/bin/pytest
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck && npm run lint:web && npm run test:web && npm run build:web
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [python, web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx -w @cmc/e2e playwright install --with-deps chromium
+      - run: ./scripts/e2e.sh
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: tests/e2e/playwright-report }

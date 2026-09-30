@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cmc-agent"
+version = "0.1.0"
+description = "Cardmarket Companion - browser agent (Playwright)"
+requires-python = ">=3.12"
+dependencies = [
+  "cmc-shared",
+  "playwright>=1.63,<1.64",
+  "httpx>=0.28,<0.29",
+  "pydantic>=2.13,<3",
+  "pydantic-settings>=2.15,<3",
+  "selectolax>=0.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=9.1", "pytest-asyncio>=1.4", "ruff>=0.16", "mypy>=2.3"]
+
+[project.scripts]
+cmc-agent = "agent.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["agent*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["browser: tests that launch Chromium via Playwright"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "N", "ASYNC"]
+ignore = ["S101", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S311", "E501"]
+"agent/mock/**" = ["S311"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+mypy_path = "../../packages/shared"
+exclude = ["tests/"]

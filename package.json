@@ -1,0 +1,16 @@
+{
+  "name": "cardmarket-companion",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/web", "packages/types", "tests/e2e"],
+  "scripts": {
+    "dev:web": "npm run dev -w @cmc/web",
+    "build:web": "npm run build -w @cmc/web",
+    "lint:web": "npm run lint -w @cmc/web",
+    "test:web": "npm run test -w @cmc/web",
+    "typecheck": "npm run typecheck -w @cmc/web",
+    "gen:types": "npm run gen -w @cmc/types",
+    "test:e2e": "npm run test -w @cmc/e2e"
+  },
+  "engines": { "node": ">=22" }
+}

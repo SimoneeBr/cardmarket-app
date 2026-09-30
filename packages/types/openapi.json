@@ -1,0 +1,7054 @@
+{
+  "components": {
+    "schemas": {
+      "ActionBrief": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActionStatus"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActionType"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "status",
+          "created_at",
+          "attempts",
+          "last_error"
+        ],
+        "title": "ActionBrief",
+        "type": "object"
+      },
+      "ActionOut": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correlation Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "max_attempts": {
+            "title": "Max Attempts",
+            "type": "integer"
+          },
+          "needs_verification": {
+            "title": "Needs Verification",
+            "type": "boolean"
+          },
+          "not_before": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Not Before"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "requested_by_user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested By User Id"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActionStatus"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActionType"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "status",
+          "created_at",
+          "attempts",
+          "last_error",
+          "payload",
+          "max_attempts",
+          "last_error_code",
+          "result",
+          "needs_verification",
+          "correlation_id",
+          "requested_by_user_id",
+          "not_before",
+          "started_at",
+          "completed_at"
+        ],
+        "title": "ActionOut",
+        "type": "object"
+      },
+      "ActionOutcome": {
+        "description": "What the agent reports back after trying an action.",
+        "enum": [
+          "SUCCESS",
+          "FAILED",
+          "RETRY",
+          "UNVERIFIED",
+          "UNSAFE"
+        ],
+        "title": "ActionOutcome",
+        "type": "string"
+      },
+      "ActionResultRequest": {
+        "properties": {
+          "artifacts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/ActionOutcome"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "ActionResultRequest",
+        "type": "object"
+      },
+      "ActionStatus": {
+        "enum": [
+          "PENDING",
+          "PROCESSING",
+          "SUCCESS",
+          "FAILED",
+          "NEEDS_ATTENTION"
+        ],
+        "title": "ActionStatus",
+        "type": "string"
+      },
+      "ActionType": {
+        "enum": [
+          "SEND_MESSAGE",
+          "MARK_ORDER_SHIPPED",
+          "PAIR_SESSION",
+          "VERIFY_SESSION"
+        ],
+        "title": "ActionType",
+        "type": "string"
+      },
+      "ActivityItem": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DomainEventType"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "occurred_at",
+          "link"
+        ],
+        "title": "ActivityItem",
+        "type": "object"
+      },
+      "AgentCommand": {
+        "properties": {
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "type": {
+            "$ref": "#/components/schemas/AgentCommandType"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "AgentCommand",
+        "type": "object"
+      },
+      "AgentCommandType": {
+        "description": "Out-of-band commands delivered with the heartbeat response.\n\nThe SIMULATE_* commands are honoured only by the mock adapter.",
+        "enum": [
+          "SIMULATE_SESSION_EXPIRED",
+          "SIMULATE_SYNC_ERROR",
+          "SIMULATE_NEW_ACTIVITY",
+          "SYNC_NOW",
+          "DISCONNECT"
+        ],
+        "title": "AgentCommandType",
+        "type": "string"
+      },
+      "AgentMode": {
+        "enum": [
+          "MOCK",
+          "LIVE"
+        ],
+        "title": "AgentMode",
+        "type": "string"
+      },
+      "AuditLogOut": {
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "actor": {
+            "title": "Actor",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntityType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "actor",
+          "action",
+          "entity_type",
+          "entity_id",
+          "result",
+          "error",
+          "details",
+          "ip",
+          "request_id",
+          "created_at"
+        ],
+        "title": "AuditLogOut",
+        "type": "object"
+      },
+      "CartDetail": {
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cardmarket Created At"
+          },
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          },
+          "raw_source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Source Reference"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CartStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "buyer_name",
+          "status",
+          "total_amount",
+          "currency",
+          "item_count",
+          "cardmarket_created_at",
+          "created_at",
+          "updated_at",
+          "last_seen_at",
+          "items",
+          "raw_source_reference"
+        ],
+        "title": "CartDetail",
+        "type": "object"
+      },
+      "CartFilter": {
+        "enum": [
+          "all",
+          "to_pay",
+          "paid",
+          "completed",
+          "cancelled"
+        ],
+        "title": "CartFilter",
+        "type": "string"
+      },
+      "CartListItem": {
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cardmarket Created At"
+          },
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CartStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "buyer_name",
+          "status",
+          "total_amount",
+          "currency",
+          "item_count",
+          "cardmarket_created_at",
+          "created_at",
+          "updated_at",
+          "last_seen_at"
+        ],
+        "title": "CartListItem",
+        "type": "object"
+      },
+      "CartStatus": {
+        "enum": [
+          "TO_PAY",
+          "PAID",
+          "COMPLETED",
+          "CANCELLED",
+          "UNKNOWN"
+        ],
+        "title": "CartStatus",
+        "type": "string"
+      },
+      "CartsBatch": {
+        "properties": {
+          "details": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedCart"
+            },
+            "title": "Details",
+            "type": "array"
+          },
+          "summaries": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedCartSummary"
+            },
+            "title": "Summaries",
+            "type": "array"
+          }
+        },
+        "title": "CartsBatch",
+        "type": "object"
+      },
+      "ChangePasswordRequest": {
+        "properties": {
+          "current_password": {
+            "maxLength": 256,
+            "title": "Current Password",
+            "type": "string"
+          },
+          "new_password": {
+            "maxLength": 256,
+            "minLength": 10,
+            "title": "New Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "ChangePasswordRequest",
+        "type": "object"
+      },
+      "ClaimRequest": {
+        "properties": {
+          "agent_id": {
+            "title": "Agent Id",
+            "type": "string"
+          },
+          "lease_seconds": {
+            "default": 300,
+            "maximum": 3600.0,
+            "minimum": 30.0,
+            "title": "Lease Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "agent_id"
+        ],
+        "title": "ClaimRequest",
+        "type": "object"
+      },
+      "ClaimedAction": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "correlation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correlation Id"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "recovery": {
+            "default": false,
+            "title": "Recovery",
+            "type": "boolean"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ActionType"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "payload",
+          "attempts",
+          "idempotency_key"
+        ],
+        "title": "ClaimedAction",
+        "type": "object"
+      },
+      "ConnectionOut": {
+        "properties": {
+          "agent_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Detail"
+          },
+          "agent_last_seen_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Last Seen At"
+          },
+          "agent_mode": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentMode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "agent_online": {
+            "title": "Agent Online",
+            "type": "boolean"
+          },
+          "agent_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agent Version"
+          },
+          "last_authentication": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Authentication"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_error_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error At"
+          },
+          "last_error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_successful_sync": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Successful Sync"
+          },
+          "mock_mode": {
+            "title": "Mock Mode",
+            "type": "boolean"
+          },
+          "pairing_viewer_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pairing Viewer Url"
+          },
+          "pending_session_action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActionBrief"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "session_last_verified_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Last Verified At"
+          },
+          "session_paired_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Paired At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          },
+          "status_changed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Changed At"
+          },
+          "sync_running": {
+            "title": "Sync Running",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "agent_online",
+          "agent_mode",
+          "agent_version",
+          "agent_last_seen_at",
+          "agent_detail",
+          "last_successful_sync",
+          "last_authentication",
+          "last_error",
+          "last_error_code",
+          "last_error_at",
+          "status_changed_at",
+          "sync_running",
+          "session_paired_at",
+          "session_last_verified_at",
+          "pending_session_action",
+          "mock_mode",
+          "pairing_viewer_url"
+        ],
+        "title": "ConnectionOut",
+        "type": "object"
+      },
+      "ConnectionStatus": {
+        "enum": [
+          "DISCONNECTED",
+          "CONNECTING",
+          "CONNECTED",
+          "AUTH_REQUIRED",
+          "SESSION_EXPIRED",
+          "ERROR"
+        ],
+        "title": "ConnectionStatus",
+        "type": "string"
+      },
+      "ConversationDetail": {
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "last_message_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message Preview"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/MessageOut"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "order": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrderRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "raw_source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Source Reference"
+          },
+          "unread": {
+            "title": "Unread",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "buyer_name",
+          "unread",
+          "last_message_at",
+          "last_message_preview",
+          "order",
+          "messages",
+          "raw_source_reference"
+        ],
+        "title": "ConversationDetail",
+        "type": "object"
+      },
+      "ConversationFilter": {
+        "enum": [
+          "all",
+          "unread",
+          "with_order"
+        ],
+        "title": "ConversationFilter",
+        "type": "string"
+      },
+      "ConversationListItem": {
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "last_message_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message Preview"
+          },
+          "order": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OrderRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unread": {
+            "title": "Unread",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "buyer_name",
+          "unread",
+          "last_message_at",
+          "last_message_preview",
+          "order"
+        ],
+        "title": "ConversationListItem",
+        "type": "object"
+      },
+      "ConversationRef": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "unread": {
+            "title": "Unread",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "unread",
+          "last_message_at"
+        ],
+        "title": "ConversationRef",
+        "type": "object"
+      },
+      "ConversationsBatch": {
+        "properties": {
+          "details": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedConversation"
+            },
+            "title": "Details",
+            "type": "array"
+          },
+          "summaries": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedConversationSummary"
+            },
+            "title": "Summaries",
+            "type": "array"
+          }
+        },
+        "title": "ConversationsBatch",
+        "type": "object"
+      },
+      "DashboardAttention": {
+        "properties": {
+          "actions_needing_attention": {
+            "title": "Actions Needing Attention",
+            "type": "integer"
+          },
+          "failed_actions_24h": {
+            "title": "Failed Actions 24H",
+            "type": "integer"
+          },
+          "failed_syncs_24h": {
+            "title": "Failed Syncs 24H",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "failed_syncs_24h",
+          "actions_needing_attention",
+          "failed_actions_24h"
+        ],
+        "title": "DashboardAttention",
+        "type": "object"
+      },
+      "DashboardCarts": {
+        "properties": {
+          "paid": {
+            "title": "Paid",
+            "type": "integer"
+          },
+          "to_pay": {
+            "title": "To Pay",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "to_pay",
+          "paid"
+        ],
+        "title": "DashboardCarts",
+        "type": "object"
+      },
+      "DashboardConnection": {
+        "properties": {
+          "agent_mode": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentMode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "agent_online": {
+            "title": "Agent Online",
+            "type": "boolean"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_successful_sync": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Successful Sync"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          }
+        },
+        "required": [
+          "status",
+          "agent_online",
+          "agent_mode",
+          "last_successful_sync",
+          "last_error",
+          "last_error_code"
+        ],
+        "title": "DashboardConnection",
+        "type": "object"
+      },
+      "DashboardMessages": {
+        "properties": {
+          "unread_conversations": {
+            "title": "Unread Conversations",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "unread_conversations"
+        ],
+        "title": "DashboardMessages",
+        "type": "object"
+      },
+      "DashboardOrders": {
+        "properties": {
+          "new": {
+            "title": "New",
+            "type": "integer"
+          },
+          "paid_24h": {
+            "title": "Paid 24H",
+            "type": "integer"
+          },
+          "to_ship": {
+            "title": "To Ship",
+            "type": "integer"
+          },
+          "unpaid": {
+            "title": "Unpaid",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "new",
+          "to_ship",
+          "unpaid",
+          "paid_24h"
+        ],
+        "title": "DashboardOrders",
+        "type": "object"
+      },
+      "DashboardOut": {
+        "properties": {
+          "activity": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityItem"
+            },
+            "title": "Activity",
+            "type": "array"
+          },
+          "attention": {
+            "$ref": "#/components/schemas/DashboardAttention"
+          },
+          "carts": {
+            "$ref": "#/components/schemas/DashboardCarts"
+          },
+          "connection": {
+            "$ref": "#/components/schemas/DashboardConnection"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "messages": {
+            "$ref": "#/components/schemas/DashboardMessages"
+          },
+          "notifications_unread": {
+            "title": "Notifications Unread",
+            "type": "integer"
+          },
+          "orders": {
+            "$ref": "#/components/schemas/DashboardOrders"
+          },
+          "sales": {
+            "$ref": "#/components/schemas/DashboardSales"
+          }
+        },
+        "required": [
+          "connection",
+          "orders",
+          "messages",
+          "carts",
+          "sales",
+          "attention",
+          "notifications_unread",
+          "activity",
+          "generated_at"
+        ],
+        "title": "DashboardOut",
+        "type": "object"
+      },
+      "DashboardSales": {
+        "properties": {
+          "by_currency": {
+            "items": {
+              "$ref": "#/components/schemas/SalesRow"
+            },
+            "title": "By Currency",
+            "type": "array"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_days",
+          "by_currency"
+        ],
+        "title": "DashboardSales",
+        "type": "object"
+      },
+      "DomainEventType": {
+        "enum": [
+          "OrderCreated",
+          "OrderPaid",
+          "OrderShipped",
+          "OrderStatusChanged",
+          "MessageReceived",
+          "MessageSent",
+          "CartCreated",
+          "CartPaid",
+          "CartStatusChanged",
+          "SessionExpired",
+          "ConnectionRestored",
+          "SyncFailed",
+          "ActionFailed"
+        ],
+        "title": "DomainEventType",
+        "type": "string"
+      },
+      "EntityType": {
+        "enum": [
+          "ORDER",
+          "CONVERSATION",
+          "MESSAGE",
+          "CART",
+          "CONNECTION",
+          "SYNC_RUN",
+          "ACTION",
+          "USER",
+          "TEMPLATE",
+          "SETTINGS"
+        ],
+        "title": "EntityType",
+        "type": "string"
+      },
+      "ErrorCode": {
+        "enum": [
+          "AUTH_ERROR",
+          "NETWORK_ERROR",
+          "CARDMARKET_CHANGED",
+          "SELECTOR_NOT_FOUND",
+          "TIMEOUT",
+          "ACTION_FAILED",
+          "VERIFICATION_FAILED",
+          "DATABASE_ERROR",
+          "UNKNOWN"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "ErrorsOut": {
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/ActionOut"
+            },
+            "title": "Actions",
+            "type": "array"
+          },
+          "connection_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connection Error"
+          },
+          "connection_error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sync_runs": {
+            "items": {
+              "$ref": "#/components/schemas/SyncRunOut"
+            },
+            "title": "Sync Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sync_runs",
+          "actions",
+          "connection_error",
+          "connection_error_code"
+        ],
+        "title": "ErrorsOut",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HeartbeatRequest": {
+        "properties": {
+          "agent_id": {
+            "title": "Agent Id",
+            "type": "string"
+          },
+          "connection_status": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/AgentMode"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "agent_id",
+          "version",
+          "mode",
+          "connection_status"
+        ],
+        "title": "HeartbeatRequest",
+        "type": "object"
+      },
+      "HeartbeatResponse": {
+        "properties": {
+          "commands": {
+            "items": {
+              "$ref": "#/components/schemas/AgentCommand"
+            },
+            "title": "Commands",
+            "type": "array"
+          },
+          "sync_enabled": {
+            "title": "Sync Enabled",
+            "type": "boolean"
+          },
+          "sync_interval_seconds": {
+            "title": "Sync Interval Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sync_enabled",
+          "sync_interval_seconds"
+        ],
+        "title": "HeartbeatResponse",
+        "type": "object"
+      },
+      "ItemOut": {
+        "properties": {
+          "card_name": {
+            "title": "Card Name",
+            "type": "string"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "expansion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expansion"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "total_price": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Price"
+          },
+          "unit_price": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Price"
+          }
+        },
+        "required": [
+          "id",
+          "card_name",
+          "expansion",
+          "language",
+          "condition",
+          "quantity",
+          "unit_price",
+          "total_price"
+        ],
+        "title": "ItemOut",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "MeOut": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "active",
+          "last_login_at",
+          "created_at",
+          "permissions"
+        ],
+        "title": "MeOut",
+        "type": "object"
+      },
+      "MessageDirection": {
+        "enum": [
+          "INBOUND",
+          "OUTBOUND"
+        ],
+        "title": "MessageDirection",
+        "type": "string"
+      },
+      "MessageOut": {
+        "properties": {
+          "action_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Id"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/MessageDirection"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "sender": {
+            "title": "Sender",
+            "type": "string"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MessageStatus"
+          }
+        },
+        "required": [
+          "id",
+          "direction",
+          "sender",
+          "body",
+          "sent_at",
+          "status",
+          "created_at",
+          "action_id"
+        ],
+        "title": "MessageOut",
+        "type": "object"
+      },
+      "MessageStatus": {
+        "enum": [
+          "PENDING",
+          "SENT",
+          "FAILED",
+          "UNKNOWN"
+        ],
+        "title": "MessageStatus",
+        "type": "string"
+      },
+      "NormalizedCart": {
+        "additionalProperties": false,
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "minLength": 1,
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "currency": {
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "extra": {
+            "additionalProperties": true,
+            "title": "Extra",
+            "type": "object"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CartStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          }
+        },
+        "required": [
+          "cardmarket_id",
+          "buyer_name",
+          "status"
+        ],
+        "title": "NormalizedCart",
+        "type": "object"
+      },
+      "NormalizedCartSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "minLength": 1,
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "currency": {
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CartStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          }
+        },
+        "required": [
+          "cardmarket_id",
+          "buyer_name",
+          "status"
+        ],
+        "title": "NormalizedCartSummary",
+        "type": "object"
+      },
+      "NormalizedConversation": {
+        "additionalProperties": false,
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "minLength": 1,
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "last_message_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message Preview"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedMessage"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "order_cardmarket_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Cardmarket Id"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "unread": {
+            "default": false,
+            "title": "Unread",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "cardmarket_id",
+          "buyer_name"
+        ],
+        "title": "NormalizedConversation",
+        "type": "object"
+      },
+      "NormalizedConversationSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "minLength": 1,
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "last_message_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message Preview"
+          },
+          "order_cardmarket_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Cardmarket Id"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "unread": {
+            "default": false,
+            "title": "Unread",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "cardmarket_id",
+          "buyer_name"
+        ],
+        "title": "NormalizedConversationSummary",
+        "type": "object"
+      },
+      "NormalizedItem": {
+        "additionalProperties": false,
+        "properties": {
+          "card_name": {
+            "title": "Card Name",
+            "type": "string"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "expansion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expansion"
+          },
+          "extra": {
+            "additionalProperties": true,
+            "title": "Extra",
+            "type": "object"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "quantity": {
+            "default": 1,
+            "minimum": 0.0,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "total_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Price"
+          },
+          "unit_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Price"
+          }
+        },
+        "required": [
+          "card_name"
+        ],
+        "title": "NormalizedItem",
+        "type": "object"
+      },
+      "NormalizedMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cardmarket Id"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/MessageDirection"
+          },
+          "sender": {
+            "title": "Sender",
+            "type": "string"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          }
+        },
+        "required": [
+          "direction",
+          "sender",
+          "body"
+        ],
+        "title": "NormalizedMessage",
+        "type": "object"
+      },
+      "NormalizedOrder": {
+        "additionalProperties": false,
+        "description": "Full order detail.",
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "minLength": 1,
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "currency": {
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "extra": {
+            "additionalProperties": true,
+            "title": "Extra",
+            "type": "object"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "order_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Date"
+          },
+          "paid_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid At"
+          },
+          "payment_status": {
+            "$ref": "#/components/schemas/PaymentStatus",
+            "default": "UNKNOWN"
+          },
+          "shipped_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipped At"
+          },
+          "shipping_status": {
+            "$ref": "#/components/schemas/ShippingStatus",
+            "default": "UNKNOWN"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tracking Number"
+          }
+        },
+        "required": [
+          "cardmarket_id",
+          "buyer_name",
+          "status"
+        ],
+        "title": "NormalizedOrder",
+        "type": "object"
+      },
+      "NormalizedOrderSummary": {
+        "additionalProperties": false,
+        "description": "What is visible in an order list row.",
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "minLength": 1,
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "currency": {
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "order_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Date"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          }
+        },
+        "required": [
+          "cardmarket_id",
+          "buyer_name",
+          "status"
+        ],
+        "title": "NormalizedOrderSummary",
+        "type": "object"
+      },
+      "NotificationOut": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntityType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "link": {
+            "title": "Link",
+            "type": "string"
+          },
+          "read": {
+            "title": "Read",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/NotificationType"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "entity_type",
+          "entity_id",
+          "read",
+          "created_at",
+          "link"
+        ],
+        "title": "NotificationOut",
+        "type": "object"
+      },
+      "NotificationPreferenceOut": {
+        "properties": {
+          "in_app": {
+            "title": "In App",
+            "type": "boolean"
+          },
+          "push": {
+            "title": "Push",
+            "type": "boolean"
+          },
+          "type": {
+            "$ref": "#/components/schemas/NotificationType"
+          }
+        },
+        "required": [
+          "type",
+          "in_app",
+          "push"
+        ],
+        "title": "NotificationPreferenceOut",
+        "type": "object"
+      },
+      "NotificationPreferencesUpdate": {
+        "properties": {
+          "preferences": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationPreferenceOut"
+            },
+            "title": "Preferences",
+            "type": "array"
+          }
+        },
+        "required": [
+          "preferences"
+        ],
+        "title": "NotificationPreferencesUpdate",
+        "type": "object"
+      },
+      "NotificationType": {
+        "enum": [
+          "ORDER_CREATED",
+          "ORDER_PAID",
+          "ORDER_SHIPPED",
+          "MESSAGE_RECEIVED",
+          "CART_CREATED",
+          "CART_PAID",
+          "SESSION_EXPIRED",
+          "SYNC_ERROR",
+          "ACTION_FAILED"
+        ],
+        "title": "NotificationType",
+        "type": "string"
+      },
+      "OkResponse": {
+        "properties": {
+          "ok": {
+            "default": true,
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "title": "OkResponse",
+        "type": "object"
+      },
+      "OrderDetail": {
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationRef"
+            },
+            "title": "Conversations",
+            "type": "array"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "detail_fetched_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail Fetched At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "is_new": {
+            "title": "Is New",
+            "type": "boolean"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          },
+          "order_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Date"
+          },
+          "paid_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid At"
+          },
+          "payment_status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          },
+          "pending_action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActionBrief"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "raw_source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Source Reference"
+          },
+          "shipped_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipped At"
+          },
+          "shipping_status": {
+            "$ref": "#/components/schemas/ShippingStatus"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tracking Number"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "buyer_name",
+          "status",
+          "payment_status",
+          "shipping_status",
+          "total_amount",
+          "currency",
+          "item_count",
+          "order_date",
+          "paid_at",
+          "shipped_at",
+          "is_new",
+          "last_seen_at",
+          "tracking_number",
+          "raw_source_reference",
+          "detail_fetched_at",
+          "items",
+          "conversations"
+        ],
+        "title": "OrderDetail",
+        "type": "object"
+      },
+      "OrderFilter": {
+        "enum": [
+          "all",
+          "new",
+          "paid",
+          "unpaid",
+          "to_ship",
+          "shipped",
+          "completed",
+          "cancelled"
+        ],
+        "title": "OrderFilter",
+        "type": "string"
+      },
+      "OrderListItem": {
+        "properties": {
+          "buyer_name": {
+            "title": "Buyer Name",
+            "type": "string"
+          },
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "is_new": {
+            "title": "Is New",
+            "type": "boolean"
+          },
+          "item_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Count"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          },
+          "order_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Date"
+          },
+          "paid_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid At"
+          },
+          "payment_status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          },
+          "shipped_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shipped At"
+          },
+          "shipping_status": {
+            "$ref": "#/components/schemas/ShippingStatus"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "buyer_name",
+          "status",
+          "payment_status",
+          "shipping_status",
+          "total_amount",
+          "currency",
+          "item_count",
+          "order_date",
+          "paid_at",
+          "shipped_at",
+          "is_new",
+          "last_seen_at"
+        ],
+        "title": "OrderListItem",
+        "type": "object"
+      },
+      "OrderRef": {
+        "properties": {
+          "cardmarket_id": {
+            "title": "Cardmarket Id",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          }
+        },
+        "required": [
+          "id",
+          "cardmarket_id",
+          "status",
+          "total_amount",
+          "currency"
+        ],
+        "title": "OrderRef",
+        "type": "object"
+      },
+      "OrderSort": {
+        "enum": [
+          "date_desc",
+          "date_asc",
+          "total_desc",
+          "total_asc",
+          "buyer"
+        ],
+        "title": "OrderSort",
+        "type": "string"
+      },
+      "OrderStatus": {
+        "description": "Internal order lifecycle, independent from Cardmarket wording.",
+        "enum": [
+          "UNPAID",
+          "PAID",
+          "SHIPPED",
+          "COMPLETED",
+          "CANCELLED",
+          "UNKNOWN"
+        ],
+        "title": "OrderStatus",
+        "type": "string"
+      },
+      "OrdersBatch": {
+        "properties": {
+          "details": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedOrder"
+            },
+            "title": "Details",
+            "type": "array"
+          },
+          "summaries": {
+            "items": {
+              "$ref": "#/components/schemas/NormalizedOrderSummary"
+            },
+            "title": "Summaries",
+            "type": "array"
+          }
+        },
+        "title": "OrdersBatch",
+        "type": "object"
+      },
+      "Page_ActionOut_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ActionOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ActionOut]",
+        "type": "object"
+      },
+      "Page_AuditLogOut_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditLogOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[AuditLogOut]",
+        "type": "object"
+      },
+      "Page_CartListItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CartListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[CartListItem]",
+        "type": "object"
+      },
+      "Page_ConversationListItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[ConversationListItem]",
+        "type": "object"
+      },
+      "Page_NotificationOut_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[NotificationOut]",
+        "type": "object"
+      },
+      "Page_OrderListItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrderListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[OrderListItem]",
+        "type": "object"
+      },
+      "Page_SyncRunOut_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SyncRunOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "Page[SyncRunOut]",
+        "type": "object"
+      },
+      "PaymentStatus": {
+        "enum": [
+          "UNPAID",
+          "PAID",
+          "REFUNDED",
+          "UNKNOWN"
+        ],
+        "title": "PaymentStatus",
+        "type": "string"
+      },
+      "PurgeRequest": {
+        "properties": {
+          "confirm": {
+            "title": "Confirm",
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirm"
+        ],
+        "title": "PurgeRequest",
+        "type": "object"
+      },
+      "PushConfigOut": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "public_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Key"
+          }
+        },
+        "required": [
+          "enabled",
+          "public_key"
+        ],
+        "title": "PushConfigOut",
+        "type": "object"
+      },
+      "PushSubscriptionIn": {
+        "properties": {
+          "endpoint": {
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Endpoint",
+            "type": "string"
+          },
+          "keys": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Keys",
+            "type": "object"
+          }
+        },
+        "required": [
+          "endpoint",
+          "keys"
+        ],
+        "title": "PushSubscriptionIn",
+        "type": "object"
+      },
+      "RuntimeSettingsOut": {
+        "properties": {
+          "shop_name": {
+            "title": "Shop Name",
+            "type": "string"
+          },
+          "sync_enabled": {
+            "title": "Sync Enabled",
+            "type": "boolean"
+          },
+          "sync_interval_seconds": {
+            "title": "Sync Interval Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sync_enabled",
+          "sync_interval_seconds",
+          "shop_name"
+        ],
+        "title": "RuntimeSettingsOut",
+        "type": "object"
+      },
+      "RuntimeSettingsUpdate": {
+        "properties": {
+          "shop_name": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shop Name"
+          },
+          "sync_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sync Enabled"
+          },
+          "sync_interval_seconds": {
+            "anyOf": [
+              {
+                "maximum": 3600.0,
+                "minimum": 10.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sync Interval Seconds"
+          }
+        },
+        "title": "RuntimeSettingsUpdate",
+        "type": "object"
+      },
+      "SalesRow": {
+        "properties": {
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "orders": {
+            "title": "Orders",
+            "type": "integer"
+          },
+          "total": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "total",
+          "orders"
+        ],
+        "title": "SalesRow",
+        "type": "object"
+      },
+      "SendMessageRequest": {
+        "properties": {
+          "body": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Body",
+            "type": "string"
+          },
+          "client_key": {
+            "maxLength": 64,
+            "minLength": 8,
+            "title": "Client Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "body",
+          "client_key"
+        ],
+        "title": "SendMessageRequest",
+        "type": "object"
+      },
+      "SessionReport": {
+        "properties": {
+          "authenticated": {
+            "default": false,
+            "title": "Authenticated",
+            "type": "boolean"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "SessionReport",
+        "type": "object"
+      },
+      "SetupAdminRequest": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 256,
+            "minLength": 10,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "password"
+        ],
+        "title": "SetupAdminRequest",
+        "type": "object"
+      },
+      "SetupStatus": {
+        "properties": {
+          "agent_online": {
+            "title": "Agent Online",
+            "type": "boolean"
+          },
+          "connection_status": {
+            "$ref": "#/components/schemas/ConnectionStatus"
+          },
+          "has_synced": {
+            "title": "Has Synced",
+            "type": "boolean"
+          },
+          "mock_mode": {
+            "title": "Mock Mode",
+            "type": "boolean"
+          },
+          "needs_admin": {
+            "title": "Needs Admin",
+            "type": "boolean"
+          },
+          "push_enabled": {
+            "title": "Push Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "needs_admin",
+          "mock_mode",
+          "push_enabled",
+          "connection_status",
+          "agent_online",
+          "has_synced"
+        ],
+        "title": "SetupStatus",
+        "type": "object"
+      },
+      "ShipOrderRequest": {
+        "properties": {
+          "client_key": {
+            "maxLength": 64,
+            "minLength": 8,
+            "title": "Client Key",
+            "type": "string"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tracking Number"
+          }
+        },
+        "required": [
+          "client_key"
+        ],
+        "title": "ShipOrderRequest",
+        "type": "object"
+      },
+      "ShippingStatus": {
+        "enum": [
+          "NOT_SHIPPED",
+          "SHIPPED",
+          "DELIVERED",
+          "UNKNOWN"
+        ],
+        "title": "ShippingStatus",
+        "type": "string"
+      },
+      "SimulationRequest": {
+        "properties": {
+          "scenario": {
+            "pattern": "^(session_expired|sync_error|new_activity)$",
+            "title": "Scenario",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario"
+        ],
+        "title": "SimulationRequest",
+        "type": "object"
+      },
+      "SyncBatchResult": {
+        "properties": {
+          "events": {
+            "title": "Events",
+            "type": "integer"
+          },
+          "records_changed": {
+            "title": "Records Changed",
+            "type": "integer"
+          },
+          "records_found": {
+            "title": "Records Found",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "records_found",
+          "records_changed",
+          "events"
+        ],
+        "title": "SyncBatchResult",
+        "type": "object"
+      },
+      "SyncCompleteRequest": {
+        "properties": {
+          "artifacts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SyncRunStatus"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "SyncCompleteRequest",
+        "type": "object"
+      },
+      "SyncEntity": {
+        "enum": [
+          "ORDERS",
+          "CONVERSATIONS",
+          "CARTS",
+          "FULL"
+        ],
+        "title": "SyncEntity",
+        "type": "string"
+      },
+      "SyncRunOut": {
+        "properties": {
+          "artifacts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "entity_type": {
+            "$ref": "#/components/schemas/SyncEntity"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "records_changed": {
+            "title": "Records Changed",
+            "type": "integer"
+          },
+          "records_found": {
+            "title": "Records Found",
+            "type": "integer"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SyncRunStatus"
+          },
+          "sync_id": {
+            "title": "Sync Id",
+            "type": "string"
+          },
+          "trigger": {
+            "title": "Trigger",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sync_id",
+          "started_at",
+          "completed_at",
+          "status",
+          "entity_type",
+          "trigger",
+          "records_found",
+          "records_changed",
+          "error",
+          "error_code",
+          "artifacts"
+        ],
+        "title": "SyncRunOut",
+        "type": "object"
+      },
+      "SyncRunStatus": {
+        "enum": [
+          "RUNNING",
+          "SUCCESS",
+          "PARTIAL",
+          "FAILED"
+        ],
+        "title": "SyncRunStatus",
+        "type": "string"
+      },
+      "SyncStartRequest": {
+        "properties": {
+          "agent_id": {
+            "title": "Agent Id",
+            "type": "string"
+          },
+          "entity": {
+            "$ref": "#/components/schemas/SyncEntity",
+            "default": "FULL"
+          },
+          "trigger": {
+            "default": "schedule",
+            "title": "Trigger",
+            "type": "string"
+          }
+        },
+        "required": [
+          "agent_id"
+        ],
+        "title": "SyncStartRequest",
+        "type": "object"
+      },
+      "SyncStartResponse": {
+        "properties": {
+          "granted": {
+            "title": "Granted",
+            "type": "boolean"
+          },
+          "known_carts": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Known Carts",
+            "type": "object"
+          },
+          "known_conversations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Known Conversations",
+            "type": "object"
+          },
+          "known_orders": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Known Orders",
+            "type": "object"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "sync_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sync Id"
+          },
+          "sync_run_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sync Run Id"
+          }
+        },
+        "required": [
+          "granted"
+        ],
+        "title": "SyncStartResponse",
+        "type": "object"
+      },
+      "SyncStatusOut": {
+        "properties": {
+          "last_runs": {
+            "items": {
+              "$ref": "#/components/schemas/SyncRunOut"
+            },
+            "title": "Last Runs",
+            "type": "array"
+          },
+          "last_successful_sync": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Successful Sync"
+          },
+          "running": {
+            "title": "Running",
+            "type": "boolean"
+          },
+          "sync_enabled": {
+            "title": "Sync Enabled",
+            "type": "boolean"
+          },
+          "sync_interval_seconds": {
+            "title": "Sync Interval Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sync_enabled",
+          "sync_interval_seconds",
+          "last_successful_sync",
+          "running",
+          "last_runs"
+        ],
+        "title": "SyncStatusOut",
+        "type": "object"
+      },
+      "TemplateIn": {
+        "properties": {
+          "active": {
+            "default": true,
+            "title": "Active",
+            "type": "boolean"
+          },
+          "body": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Body",
+            "type": "string"
+          },
+          "icon": {
+            "default": "",
+            "maxLength": 16,
+            "title": "Icon",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 60,
+            "minLength": 1,
+            "pattern": "^[a-z0-9_\\-]+$",
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "position": {
+            "default": 0,
+            "title": "Position",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "body"
+        ],
+        "title": "TemplateIn",
+        "type": "object"
+      },
+      "TemplateOut": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "label",
+          "icon",
+          "body",
+          "position",
+          "active"
+        ],
+        "title": "TemplateOut",
+        "type": "object"
+      },
+      "TemplateRenderOut": {
+        "properties": {
+          "missing_variables": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Variables",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "missing_variables"
+        ],
+        "title": "TemplateRenderOut",
+        "type": "object"
+      },
+      "TemplateRenderRequest": {
+        "properties": {
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "tracking_number": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tracking Number"
+          }
+        },
+        "title": "TemplateRenderRequest",
+        "type": "object"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 256,
+            "minLength": 10,
+            "title": "Password",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "default": "STAFF"
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "password"
+        ],
+        "title": "UserCreate",
+        "type": "object"
+      },
+      "UserOut": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "active",
+          "last_login_at",
+          "created_at"
+        ],
+        "title": "UserOut",
+        "type": "object"
+      },
+      "UserRole": {
+        "enum": [
+          "ADMIN",
+          "MANAGER",
+          "STAFF"
+        ],
+        "title": "UserRole",
+        "type": "string"
+      },
+      "UserUpdate": {
+        "properties": {
+          "active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "UserUpdate",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Cardmarket Companion API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/admin/actions": {
+      "get": {
+        "operationId": "list_actions_api_admin_actions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ActionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ActionOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Actions",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/actions/{action_id}/cancel": {
+      "post": {
+        "operationId": "cancel_action_api_admin_actions__action_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Action",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/actions/{action_id}/resolve": {
+      "post": {
+        "description": "Operator verified on Cardmarket that the action did happen.",
+        "operationId": "resolve_action_api_admin_actions__action_id__resolve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resolve Action",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/actions/{action_id}/retry": {
+      "post": {
+        "operationId": "retry_action_api_admin_actions__action_id__retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Action",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/artifacts/{name}": {
+      "get": {
+        "description": "Serve a failure screenshot/trace captured by the agent (shared volume).",
+        "operationId": "artifact_api_admin_artifacts__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Artifact",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/audit-logs": {
+      "get": {
+        "operationId": "audit_logs_api_admin_audit_logs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 60,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_AuditLogOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Audit Logs",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/data/purge": {
+      "post": {
+        "description": "Delete all locally mirrored customer data. Cardmarket is not touched.",
+        "operationId": "purge_api_admin_data_purge_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PurgeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Purge Api Admin Data Purge Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Purge",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/errors": {
+      "get": {
+        "operationId": "errors_api_admin_errors_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Errors",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/retention/run": {
+      "post": {
+        "operationId": "run_retention_api_admin_retention_run_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Run Retention Api Admin Retention Run Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Run Retention",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/settings": {
+      "get": {
+        "operationId": "get_settings__api_admin_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeSettingsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings ",
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "operationId": "put_settings_api_admin_settings_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuntimeSettingsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeSettingsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Settings",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/simulate": {
+      "post": {
+        "description": "Mock mode only: ask the mock agent to simulate a scenario.",
+        "operationId": "simulate_api_admin_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Simulate",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "operationId": "list_users_api_admin_users_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserOut"
+                  },
+                  "title": "Response List Users Api Admin Users Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Users",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "operationId": "create_user_api_admin_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create User",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/admin/users/{user_id}": {
+      "patch": {
+        "operationId": "update_user_api_admin_users__user_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update User",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "logout_api_auth_logout_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/carts": {
+      "get": {
+        "operationId": "list_carts_api_carts_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/CartFilter",
+              "default": "all"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_CartListItem_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Carts",
+        "tags": [
+          "carts"
+        ]
+      }
+    },
+    "/api/carts/{cart_id}": {
+      "get": {
+        "operationId": "get_cart_api_carts__cart_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cart_id",
+            "required": true,
+            "schema": {
+              "title": "Cart Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Cart",
+        "tags": [
+          "carts"
+        ]
+      }
+    },
+    "/api/connection/disconnect": {
+      "post": {
+        "operationId": "disconnect_api_connection_disconnect_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Disconnect",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/connection/pair": {
+      "post": {
+        "description": "Start manual pairing: the agent opens Cardmarket, a human logs in (incl. 2FA).",
+        "operationId": "pair_api_connection_pair_post",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionBrief"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Pair",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/connection/reconnect": {
+      "post": {
+        "description": "Re-check the persisted browser session without asking for a new login.",
+        "operationId": "reconnect_api_connection_reconnect_post",
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionBrief"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Reconnect",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/connection/status": {
+      "get": {
+        "operationId": "connection_status_api_connection_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Connection Status",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/connection/sync-now": {
+      "post": {
+        "operationId": "sync_now_api_connection_sync_now_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sync Now",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/conversations": {
+      "get": {
+        "operationId": "list_conversations_api_conversations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ConversationFilter",
+              "default": "all"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_ConversationListItem_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Conversations",
+        "tags": [
+          "conversations"
+        ]
+      }
+    },
+    "/api/conversations/{conversation_id}": {
+      "get": {
+        "operationId": "get_conversation_api_conversations__conversation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "title": "Conversation Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Conversation",
+        "tags": [
+          "conversations"
+        ]
+      }
+    },
+    "/api/conversations/{conversation_id}/messages": {
+      "post": {
+        "description": "Queue a message. It becomes SENT only after the agent verified it on Cardmarket.",
+        "operationId": "send_message_api_conversations__conversation_id__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "title": "Conversation Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Send Message",
+        "tags": [
+          "conversations"
+        ]
+      }
+    },
+    "/api/conversations/{conversation_id}/read": {
+      "post": {
+        "operationId": "mark_read_api_conversations__conversation_id__read_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversation_id",
+            "required": true,
+            "schema": {
+              "title": "Conversation Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mark Read",
+        "tags": [
+          "conversations"
+        ]
+      }
+    },
+    "/api/dashboard": {
+      "get": {
+        "operationId": "dashboard_api_dashboard_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Dashboard",
+        "tags": [
+          "dashboard"
+        ]
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "me_api_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/me/password": {
+      "post": {
+        "operationId": "change_password_api_me_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/notification-preferences": {
+      "get": {
+        "operationId": "get_preferences_api_notification_preferences_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationPreferenceOut"
+                  },
+                  "title": "Response Get Preferences Api Notification Preferences Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Preferences",
+        "tags": [
+          "notifications"
+        ]
+      },
+      "put": {
+        "operationId": "update_preferences_api_notification_preferences_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationPreferencesUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationPreferenceOut"
+                  },
+                  "title": "Response Update Preferences Api Notification Preferences Put",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Preferences",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications": {
+      "delete": {
+        "description": "Delete the user's already-read notifications.",
+        "operationId": "clear_read_api_notifications_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Clear Read",
+        "tags": [
+          "notifications"
+        ]
+      },
+      "get": {
+        "operationId": "list_notifications_api_notifications_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "unread_only",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Unread Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_NotificationOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Notifications",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications/read-all": {
+      "post": {
+        "operationId": "mark_all_read_api_notifications_read_all_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Mark All Read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications/unread-count": {
+      "get": {
+        "operationId": "unread_count_api_notifications_unread_count_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Unread Count Api Notifications Unread Count Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Unread Count",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications/{notification_id}/read": {
+      "post": {
+        "operationId": "mark_read_api_notifications__notification_id__read_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notification_id",
+            "required": true,
+            "schema": {
+              "title": "Notification Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mark Read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "operationId": "list_orders_api_orders_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderFilter",
+              "default": "all"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderSort",
+              "default": "date_desc"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_OrderListItem_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Orders",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/api/orders/{order_id}": {
+      "get": {
+        "operationId": "get_order_api_orders__order_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "title": "Order Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Order",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/api/orders/{order_id}/acknowledge": {
+      "post": {
+        "operationId": "acknowledge_order_api_orders__order_id__acknowledge_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "title": "Order Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Acknowledge Order",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/api/orders/{order_id}/ship": {
+      "post": {
+        "description": "Queue 'mark as shipped' on Cardmarket. Local status changes only once verified.",
+        "operationId": "ship_order_api_orders__order_id__ship_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "order_id",
+            "required": true,
+            "schema": {
+              "title": "Order Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShipOrderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionBrief"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ship Order",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/api/push/config": {
+      "get": {
+        "operationId": "push_config_api_push_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Push Config",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/push/subscriptions": {
+      "post": {
+        "operationId": "subscribe_api_push_subscriptions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushSubscriptionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Subscribe",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/push/test": {
+      "post": {
+        "operationId": "push_test_api_push_test_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Push Test Api Push Test Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Push Test",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/push/unsubscribe": {
+      "post": {
+        "operationId": "unsubscribe_api_push_unsubscribe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushSubscriptionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unsubscribe",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/setup/admin": {
+      "post": {
+        "description": "First-run only: create the initial administrator.",
+        "operationId": "setup_admin_api_setup_admin_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetupAdminRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Setup Admin",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/setup/status": {
+      "get": {
+        "operationId": "setup_status_api_setup_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Setup Status",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/sync/runs": {
+      "get": {
+        "operationId": "sync_runs_api_sync_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_SyncRunOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Runs",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/sync/status": {
+      "get": {
+        "operationId": "sync_status_api_sync_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncStatusOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sync Status",
+        "tags": [
+          "connection"
+        ]
+      }
+    },
+    "/api/templates": {
+      "get": {
+        "operationId": "list_templates_api_templates_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_inactive",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Inactive",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TemplateOut"
+                  },
+                  "title": "Response List Templates Api Templates Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Templates",
+        "tags": [
+          "templates"
+        ]
+      },
+      "post": {
+        "operationId": "create_template_api_templates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/templates/variables": {
+      "get": {
+        "operationId": "list_variables_api_templates_variables_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "Response List Variables Api Templates Variables Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Variables",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/templates/{template_id}": {
+      "delete": {
+        "operationId": "delete_template_api_templates__template_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Template",
+        "tags": [
+          "templates"
+        ]
+      },
+      "put": {
+        "operationId": "update_template_api_templates__template_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Template",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/api/templates/{template_id}/render": {
+      "post": {
+        "operationId": "render_api_templates__template_id__render_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateRenderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateRenderOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Render",
+        "tags": [
+          "templates"
+        ]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "live_health_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Live Health Live Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Live",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Ready Health Ready Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/internal/agent/actions/claim": {
+      "post": {
+        "operationId": "claim_action_internal_agent_actions_claim_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClaimRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ClaimedAction"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Claim Action Internal Agent Actions Claim Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Claim Action",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/actions/{action_id}/result": {
+      "post": {
+        "operationId": "action_result_internal_agent_actions__action_id__result_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "action_id",
+            "required": true,
+            "schema": {
+              "title": "Action Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionResultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Action Result",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/heartbeat": {
+      "post": {
+        "operationId": "heartbeat_internal_agent_heartbeat_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HeartbeatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeartbeatResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Heartbeat",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/session": {
+      "post": {
+        "operationId": "report_session_internal_agent_session_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeartbeatResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Session",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/sync/start": {
+      "post": {
+        "operationId": "sync_start_internal_agent_sync_start_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncStartResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Start",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/sync/{run_id}/carts": {
+      "post": {
+        "operationId": "sync_carts_internal_agent_sync__run_id__carts_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartsBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncBatchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Carts",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/sync/{run_id}/complete": {
+      "post": {
+        "operationId": "sync_complete_internal_agent_sync__run_id__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncCompleteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Complete",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/sync/{run_id}/conversations": {
+      "post": {
+        "operationId": "sync_conversations_internal_agent_sync__run_id__conversations_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationsBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncBatchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Conversations",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    },
+    "/internal/agent/sync/{run_id}/orders": {
+      "post": {
+        "operationId": "sync_orders_internal_agent_sync__run_id__orders_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrdersBatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncBatchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Orders",
+        "tags": [
+          "internal-agent"
+        ]
+      }
+    }
+  }
+}
