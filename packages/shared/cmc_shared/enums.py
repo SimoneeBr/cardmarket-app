@@ -117,6 +117,10 @@ class ErrorCode(StrEnum):
     AUTH_ERROR = "AUTH_ERROR"
     NETWORK_ERROR = "NETWORK_ERROR"
     CARDMARKET_CHANGED = "CARDMARKET_CHANGED"
+    # Refused by an external firewall/WAF (e.g. a Cloudflare "you have been blocked"
+    # page) before Cardmarket was reached. Not transient, not an auth problem, and
+    # not something the agent may try to get around.
+    ACCESS_BLOCKED = "ACCESS_BLOCKED"
     SELECTOR_NOT_FOUND = "SELECTOR_NOT_FOUND"
     TIMEOUT = "TIMEOUT"
     ACTION_FAILED = "ACTION_FAILED"

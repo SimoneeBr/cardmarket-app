@@ -34,7 +34,7 @@ async def run_calibration(settings: AgentSettings) -> dict[str, Any]:
     report: dict[str, Any] = {"registry_version": selectors.REGISTRY_VERSION, "pages": {}}
     targets = {
         "home": urls.home,
-        "orders": urls.order_lists[0],
+        "orders": urls.order_lists[1],
         "messages": urls.messages,
         "carts": urls.carts,
     }
