@@ -51,6 +51,11 @@ Nuova migrazione: `cd apps/api && .venv/bin/alembic revision --autogenerate -m "
 | `cd apps/agent && .venv/bin/pytest` | parser su fixture, mock adapter, executor, sync, runner, **Chromium reale** contro un finto sito Cardmarket locale |
 | `npm run test:web` | Vitest + Testing Library |
 | `./scripts/e2e.sh` | stack Docker isolato (`cmc-e2e`, porte 3100/8100) + Playwright mobile e desktop |
+| `./scripts/prod-smoke.sh` | `docker-compose.prod.yml` in progetto isolato (mock, `DOMAIN=localhost`): health, porte, routing, TLS/cookie, setup token, isolamento, Chromium hardened, backup/restore |
+| `./scripts/check-repo-hygiene.sh` | nessun file sensibile tracciato o non ignorato |
+
+E2E contro lo stack di produzione locale (HTTPS con CA interna di Caddy): `KEEP_STACK=1 ./scripts/prod-smoke.sh`, seed dei template, poi
+`E2E_BASE_URL=https://localhost:8443 E2E_IGNORE_HTTPS_ERRORS=1 npx -w @cmc/e2e playwright test` (l'admin E2E si crea con `E2E_SETUP_TOKEN`).
 
 Nessun test contatta il sito Cardmarket reale.
 

@@ -75,12 +75,16 @@ class SetupStatus(BaseModel):
     connection_status: ConnectionStatus
     agent_online: bool
     has_synced: bool
+    # "open": wizard usable; "token": a setup token is required; "disabled":
+    # create the administrator from the command line (app.scripts.create_admin).
+    web_setup: str
 
 
 class SetupAdminRequest(BaseModel):
     email: EmailStr
     name: str = Field(min_length=1, max_length=120)
     password: str = Field(min_length=10, max_length=256)
+    setup_token: str | None = Field(default=None, max_length=256)
 
 
 class UserCreate(BaseModel):

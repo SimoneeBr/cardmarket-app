@@ -26,12 +26,11 @@ class RequestContext:
 
 
 def get_request_context(request: Request) -> RequestContext:
-    forwarded = request.headers.get("x-forwarded-for")
-    ip = (
-        forwarded.split(",")[0].strip()
-        if forwarded
-        else (request.client.host if request.client else None)
-    )
+    # The client address is resolved by uvicorn's proxy-headers middleware, which
+    # only honours X-Forwarded-For from FORWARDED_ALLOW_IPS (the reverse proxy).
+    # Reading the raw header here would let clients spoof their IP and dodge
+    # the per-IP rate limits.
+    ip = request.client.host if request.client else None
     return RequestContext(
         ip=ip,
         user_agent=request.headers.get("user-agent"),

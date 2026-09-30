@@ -125,3 +125,40 @@ def test_health(client: TestClient) -> None:
     assert client.get("/health/live").json()["status"] == "ok"
     assert client.get("/health/ready").json()["database"] == "ok"
     assert "x-request-id" in client.get("/health/live").headers
+
+
+def test_web_setup_is_closed_in_production_without_token(client: TestClient, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from app.config import get_settings
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "environment", "production")
+    assert client.get("/api/setup/status").json()["web_setup"] == "disabled"
+    body = {"email": "boss@shop.it", "name": "Boss", "password": "super-secret-9"}
+    assert client.post("/api/setup/admin", json=body).status_code == 403
+
+
+def test_web_setup_requires_matching_token_in_production(client: TestClient, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from pydantic import SecretStr
+
+    from app.config import get_settings
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "environment", "production")
+    monkeypatch.setattr(settings, "setup_token", SecretStr("s3tup-token-abcdef123456"))
+    assert client.get("/api/setup/status").json()["web_setup"] == "token"
+    body = {"email": "boss@shop.it", "name": "Boss", "password": "super-secret-9"}
+    assert client.post("/api/setup/admin", json={**body, "setup_token": "wrong"}).status_code == 403
+    ok = client.post("/api/setup/admin", json={**body, "setup_token": "s3tup-token-abcdef123456"})
+    assert ok.status_code == 201
+
+
+def test_client_ip_is_not_taken_from_spoofed_header(client: TestClient, db: Session) -> None:
+    user = make_user(db)
+    for i in range(30):  # rotating a forged X-Forwarded-For must not reset the per-IP limit
+        res = client.post(
+            "/api/auth/login",
+            json={"email": f"x{i}@example.com", "password": "bad-password-1"},
+            headers={"x-forwarded-for": f"10.0.0.{i}"},
+        )
+    assert res.status_code == 429
+    assert user.id

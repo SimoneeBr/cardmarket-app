@@ -5,6 +5,17 @@ set -eu
 
 Xvfb :99 -screen 0 1366x900x24 -nolisten tcp >/tmp/xvfb.log 2>&1 &
 
+# Wait for the display socket: a headed Chromium (pairing) started before Xvfb
+# is ready fails with "Missing X server or $DISPLAY".
+i=0
+while [ ! -S /tmp/.X11-unix/X99 ]; do
+  i=$((i + 1))
+  if [ "$i" -gt 50 ]; then
+    echo "Xvfb did not start:" >&2; cat /tmp/xvfb.log >&2; exit 1
+  fi
+  sleep 0.2
+done
+
 if [ "${PAIRING_VNC_ENABLED:-false}" = "true" ]; then
   if [ -z "${PAIRING_VNC_PASSWORD:-}" ]; then
     echo "PAIRING_VNC_ENABLED=true requires PAIRING_VNC_PASSWORD" >&2

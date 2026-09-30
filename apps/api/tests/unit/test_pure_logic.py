@@ -132,3 +132,35 @@ class TestBackoffAndRateLimit:
         assert not rl.hit("k", 3, 60)
         rl.reset("k")
         assert rl.hit("k", 3, 60)
+
+
+class TestProductionValidation:
+    def _prod(self, **kw: object) -> "object":
+        from app.config import Settings
+
+        base = {
+            "environment": "production",
+            "agent_api_token": "a" * 48,
+            "cookie_secure": True,
+            "database_url": "postgresql+psycopg://cmc:Str0ng-Secret-Pw@db:5432/cmc",
+        }
+        return Settings(**{**base, **kw})  # type: ignore[arg-type]
+
+    def test_valid_production_config(self) -> None:
+        self._prod().validate_for_runtime()  # type: ignore[attr-defined]
+
+    @pytest.mark.parametrize(
+        ("override", "message"),
+        [
+            ({"agent_api_token": "short"}, "at least 32"),
+            ({"agent_api_token": "dev-only-agent-token-change-me-0123456789"}, "placeholder"),
+            ({"cookie_secure": False}, "COOKIE_SECURE"),
+            ({"database_url": "postgresql://cmc:cmc-dev-password@db/cmc"}, "DATABASE_URL"),
+            ({"setup_token": "123"}, "SETUP_TOKEN"),
+        ],
+    )
+    def test_insecure_production_config_is_refused(
+        self, override: dict[str, object], message: str
+    ) -> None:
+        with pytest.raises(RuntimeError, match=message):
+            self._prod(**override).validate_for_runtime()  # type: ignore[attr-defined]

@@ -59,6 +59,7 @@ class FakeApi:
         self.known: dict[str, dict[str, str]] = {"orders": {}, "conversations": {}, "carts": {}}
         self.commands: list[dict[str, Any]] = []
         self.heartbeats = 0
+        self.last_success: float | None = None
 
     async def heartbeat(self, req: HeartbeatRequest) -> HeartbeatResponse:
         self.heartbeats += 1

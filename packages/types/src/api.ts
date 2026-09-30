@@ -2159,6 +2159,8 @@ export interface components {
             name: string;
             /** Password */
             password: string;
+            /** Setup Token */
+            setup_token?: string | null;
         };
         /** SetupStatus */
         SetupStatus: {
@@ -2173,6 +2175,8 @@ export interface components {
             needs_admin: boolean;
             /** Push Enabled */
             push_enabled: boolean;
+            /** Web Setup */
+            web_setup: string;
         };
         /** ShipOrderRequest */
         ShipOrderRequest: {

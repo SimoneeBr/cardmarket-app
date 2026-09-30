@@ -29,7 +29,8 @@ RUN chmod +x /usr/local/bin/agent-entrypoint \
 
 USER pwuser
 EXPOSE 6080
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD pgrep -f "python -m agent" > /dev/null || exit 1
+# Application-level: event loop alive AND recent successful API contact.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD ["python", "-m", "agent", "healthcheck"]
 ENTRYPOINT ["tini", "--", "agent-entrypoint"]
 CMD ["run"]

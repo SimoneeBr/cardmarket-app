@@ -1,32 +1,197 @@
-# Production overlay:
-#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-# Requires in .env: ENVIRONMENT=production, COOKIE_SECURE=true, DOMAIN, ACME_EMAIL,
-# strong POSTGRES_PASSWORD and AGENT_API_TOKEN (>= 32 chars).
+# Cardmarket Companion - PRODUCTION stack (single host, standalone file).
+#
+#   cp .env.example .env    # then set every value marked "required in production"
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Differences from docker-compose.yml (development):
+# - no default for any secret: missing values abort `docker compose` immediately;
+# - ENVIRONMENT=production, COOKIE_SECURE=true, SEED_ON_START=false are fixed;
+# - only Caddy publishes ports (80/443); PostgreSQL, API and web are internal;
+# - PostgreSQL sits on an internal network without Internet access;
+# - noVNC pairing viewer bound to 127.0.0.1 only (SSH tunnel);
+# - hardening: no-new-privileges, dropped capabilities, resource limits, log rotation.
+name: cardmarket-companion-prod
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  logging: *logging
+
+x-app-env: &app-env
+  ENVIRONMENT: production
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  LOG_FORMAT: json
+  MOCK_CARDMARKET: ${MOCK_CARDMARKET:?MOCK_CARDMARKET must be set explicitly (true|false)}
+  AGENT_API_TOKEN: ${AGENT_API_TOKEN:?AGENT_API_TOKEN is required (>= 32 random chars)}
+
 services:
+  postgres:
+    <<: *hardening
+    image: postgres:17-alpine
+    # The official entrypoint needs these to fix data-dir ownership and drop to the postgres user.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cmc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required (URL-safe characters)}
+      POSTGRES_DB: ${POSTGRES_DB:-cmc}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [db]
+    shm_size: 256mb
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 1g, pids: 200 }
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
   api:
-    ports: !reset []
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: infrastructure/docker/api.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
-      FORWARDED_ALLOW_IPS: "*"
-  web:
-    ports: !reset []
+      <<: *app-env
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cmc}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-cmc}
+      COOKIE_SECURE: "true"
+      SEED_ON_START: "false"
+      # Only the reverse proxy / internal hops may set X-Forwarded-For.
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.16.0.0/12,10.0.0.0/8,192.168.0.0/16}
+      SETUP_TOKEN: ${SETUP_TOKEN:-}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-45}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:admin@example.com}
+      PAIRING_VIEWER_URL: ${PAIRING_VIEWER_URL:-}
+      RETENTION_MESSAGES_DAYS: ${RETENTION_MESSAGES_DAYS:-365}
+      RETENTION_NOTIFICATIONS_DAYS: ${RETENTION_NOTIFICATIONS_DAYS:-60}
+      RETENTION_AUDIT_DAYS: ${RETENTION_AUDIT_DAYS:-365}
+      RETENTION_SYNC_RUNS_DAYS: ${RETENTION_SYNC_RUNS_DAYS:-30}
+      ARTIFACTS_DIR: /data/artifacts
+    volumes:
+      - agent-artifacts:/data/artifacts:ro
+    networks: [db, app]
+    # no ports: reachable only through Caddy
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m, pids: 200 }
+
   agent:
-    ports: !override
-      - "127.0.0.1:${PAIRING_VNC_PORT:-6080}:6080"
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on: [web, api]
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: infrastructure/docker/agent.Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
     environment:
-      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
-      ACME_AGREE: "true"
+      <<: *app-env
+      API_URL: http://api:8000
+      AGENT_ID: ${AGENT_ID:-agent-main}
+      HEADLESS: "true"
+      BROWSER_PROFILE_DIR: /data/browser-profile
+      ARTIFACTS_DIR: /data/artifacts
+      ARTIFACTS_KEEP: ${ARTIFACTS_KEEP:-200}
+      MOCK_STATE_FILE: /data/mock/state.json
+      MOCK_AUTO_PAIR: ${MOCK_AUTO_PAIR:-false}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-45}
+      HEARTBEAT_SECONDS: ${HEARTBEAT_SECONDS:-15}
+      MAX_DETAILS_PER_SYNC: ${MAX_DETAILS_PER_SYNC:-25}
+      TRACE_ON_FAILURE: ${TRACE_ON_FAILURE:-false}
+      DEBUG_CAPTURE_HTML: "false"
+      CARDMARKET_LANGUAGE: ${CARDMARKET_LANGUAGE:-it}
+      CARDMARKET_GAME: ${CARDMARKET_GAME:-Magic}
+      PAIRING_TIMEOUT_SECONDS: ${PAIRING_TIMEOUT_SECONDS:-600}
+      PAIRING_VNC_ENABLED: ${PAIRING_VNC_ENABLED:-false}
+      PAIRING_VNC_PASSWORD: ${PAIRING_VNC_PASSWORD:?PAIRING_VNC_PASSWORD is required}
+    volumes:
+      # CREDENTIAL: holds the authenticated Cardmarket session. See docs/cardmarket-agent.md.
+      - browser-profile:/data/browser-profile
+      - agent-artifacts:/data/artifacts
+      - mock-state:/data/mock
+    networks: [app]
     ports:
-      - "80:80"
-      - "443:443"
+      # noVNC viewer for manual pairing - localhost only, reach it through an SSH tunnel.
+      - "127.0.0.1:${PAIRING_VNC_PORT:-6080}:6080"
+    shm_size: 1gb
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 2g, pids: 1024 }
+    logging:
+      driver: json-file
+      options: { max-size: "20m", max-file: "5" }
+
+  web:
+    <<: *hardening
+    build:
+      context: .
+      dockerfile: infrastructure/docker/web.Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    networks: [app]
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512m, pids: 200 }
+
+  caddy:
+    <<: *hardening
+    image: caddy:2-alpine
+    cap_add: [NET_BIND_SERVICE]
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN is required (public host name)}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required (certificate notices)}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
     volumes:
       - ./infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
+    networks: [app]
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256m, pids: 200 }
+    healthcheck:
+      # Admin API (container-local): config loaded and upstreams known.
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2019/reverse_proxy/upstreams"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  db:
+    internal: true # PostgreSQL has no route to the Internet
+  app: {}
 
 volumes:
+  pgdata:
+  # Persistent CREDENTIAL (Cardmarket session). Never remove with `down -v`.
+  browser-profile:
+  agent-artifacts:
+  mock-state:
   caddy-data:
   caddy-config:

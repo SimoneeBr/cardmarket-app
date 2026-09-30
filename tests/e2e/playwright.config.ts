@@ -21,6 +21,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
     locale: "it-IT",
     timezoneId: "Europe/Rome",
+    // For the production stack tested locally behind Caddy's internal CA.
+    ignoreHTTPSErrors: process.env.E2E_IGNORE_HTTPS_ERRORS === "1",
   },
   projects: [
     { name: "mobile", use: { ...devices["Pixel 7"], storageState: ".auth/admin.json" } },

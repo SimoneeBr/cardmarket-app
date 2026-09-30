@@ -32,7 +32,7 @@ export default function SetupPage() {
   const router = useRouter();
   const client = useQueryClient();
   const { data: status, refetch } = useSetupStatus();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", setup_token: "" });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -41,7 +41,10 @@ export default function SetupPage() {
     setBusy(true);
     setError(null);
     try {
-      const me = await api.post<Me>("/setup/admin", form);
+      const me = await api.post<Me>("/setup/admin", {
+        ...form,
+        setup_token: form.setup_token || null,
+      });
       client.setQueryData(keys.me, me);
       await refetch();
     } catch (err) {
@@ -64,8 +67,18 @@ export default function SetupPage() {
       </div>
       <ol className="card p-5">
         <Step n={1} title="Crea l'amministratore" done={adminDone}>
-          {!adminDone && (
+          {!adminDone && status?.web_setup === "disabled" && (
+            <p className="mt-2">
+              In produzione l&apos;amministratore si crea dal server:{" "}
+              <code className="text-xs">python -m app.scripts.create_admin --email …</code> (vedi
+              docs/deployment.md).
+            </p>
+          )}
+          {!adminDone && status?.web_setup !== "disabled" && (
             <form onSubmit={createAdmin} className="mt-3 space-y-3">
+              {status?.web_setup === "token" && (
+                <input className="input" placeholder="Codice di setup (SETUP_TOKEN)" autoComplete="off" required value={form.setup_token} onChange={(e) => setForm({ ...form, setup_token: e.target.value })} aria-label="Codice di setup" />
+              )}
               <input className="input" placeholder="Nome" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} aria-label="Nome" />
               <input className="input" type="email" placeholder="Email" autoComplete="username" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} aria-label="Email" />
               <input className="input" type="password" placeholder="Password (min. 10 caratteri)" autoComplete="new-password" minLength={10} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} aria-label="Password" />

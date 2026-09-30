@@ -49,10 +49,13 @@ Migrazioni e seed (template messaggi predefiniti) vengono eseguiti automaticamen
 ## Produzione
 
 ```bash
-cp .env.example .env   # ENVIRONMENT=production, COOKIE_SECURE=true, DOMAIN, segreti forti
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+cp .env.example .env && chmod 600 .env    # imposta tutte le voci [PROD REQUIRED]
+./scripts/prod-smoke.sh                   # verifica il file di produzione in isolamento (mock)
+docker compose -f docker-compose.prod.yml up -d --build --wait
+docker compose -f docker-compose.prod.yml exec api python -m app.scripts.seed
+docker compose -f docker-compose.prod.yml exec api python -m app.scripts.create_admin --email tu@negozio.it
 ```
-Caddy fornisce HTTPS automatico; `/internal/*` non è mai esposto. Il volume `browser-profile` **deve** essere persistente e salvato nei backup. Dettagli: [docs/deployment.md](docs/deployment.md).
+Solo Caddy (HTTPS automatico) è esposto; `/internal/*` e gli healthcheck non sono pubblici; nessun segreto ha default. Backup DB: `scripts/backup-db.sh` / `restore-db.sh`. Il volume `browser-profile` è una **credenziale** ([docs/browser-profile.md](docs/browser-profile.md)). Dettagli: [docs/deployment.md](docs/deployment.md).
 
 ## Sviluppo e test
 
@@ -60,6 +63,8 @@ Caddy fornisce HTTPS automatico; `/internal/*` non è mai esposto. Il volume `br
 ./scripts/setup-dev.sh   # venv Python, Chromium, npm
 ./scripts/test-all.sh    # lint, format, mypy strict, tsc, pytest (PostgreSQL reale), Vitest
 ./scripts/e2e.sh         # stack isolato + Playwright E2E (mobile e desktop)
+./scripts/prod-smoke.sh  # file di produzione: health, porte, TLS, isolamento, Chromium, backup/restore
+./scripts/check-repo-hygiene.sh
 ```
 Dettagli: [docs/development.md](docs/development.md).
 
@@ -78,7 +83,8 @@ docs/           architecture · development · deployment · cardmarket-agent ·
 
 ## Documentazione
 - [Architettura e decisioni](docs/architecture.md)
-- [Browser agent: pairing, sessione, action queue, selettori, backup](docs/cardmarket-agent.md)
+- [Browser agent: pairing, sessione, action queue, selettori](docs/cardmarket-agent.md)
+- [Browser profile: backup, restore, revoca, re-pairing](docs/browser-profile.md)
 - [Sicurezza e privacy](docs/security.md)
 - [Deployment](docs/deployment.md) · [Sviluppo](docs/development.md) · [Troubleshooting](docs/troubleshooting.md)
 

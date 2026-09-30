@@ -26,5 +26,5 @@ COPY --from=build --chown=app:app /repo/apps/web/public ./apps/web/public
 USER app
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 \
-  CMD wget -qO- http://127.0.0.1:3000/manifest.webmanifest > /dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1:3000/healthz > /dev/null || exit 1
 CMD ["node", "apps/web/server.js"]

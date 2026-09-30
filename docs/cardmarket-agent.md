@@ -40,7 +40,7 @@ Hook di test del mock nel testo del messaggio: `[mock:fail]` (errore di rete pri
 
 L'agent non digita mai credenziali, non conserva password o codici 2FA e non tenta di aggirare CAPTCHA/2FA.
 
-In alternativa, pairing su un desktop: `MOCK_CARDMARKET=false BROWSER_PROFILE_DIR=./profile python -m agent pair`, poi copia la cartella del profilo nel volume `browser-profile`.
+In alternativa, pairing su un desktop: `MOCK_CARDMARKET=false BROWSER_PROFILE_DIR=./profile python -m agent pair`, poi cifra la cartella e ripristinala con `scripts/browser-profile.sh restore` (vedi [browser-profile.md](browser-profile.md)); cancella la copia locale al termine.
 
 ## Sessione
 
@@ -82,13 +82,11 @@ Su errore: screenshot a pagina intera in `/data/artifacts` (visibile dagli admin
 
 Se Cardmarket cambia il DOM, i parser alzano `CARDMARKET_CHANGED`: l'agent smette di agire su quella sezione, la dashboard mostra l'errore, e basta ripetere la calibrazione.
 
-## Backup del profilo browser
+## Backup, revoca e re-pairing del profilo browser
 
-Il profilo contiene la sessione autenticata: trattalo come una credenziale.
-```bash
-docker compose stop agent
-docker run --rm -v cardmarket-companion_browser-profile:/p -v "$PWD":/b alpine \
-  tar czf /b/browser-profile-$(date +%F).tgz -C /p .
-docker compose start agent
-```
-Conserva il backup cifrato (es. `age`/`gpg`). Ripristino: estrai nello stesso volume con l'agent fermo. Senza profilo basta rifare il pairing.
+Il profilo contiene la sessione autenticata ed è una **credenziale**: backup (sempre cifrato e separato dai backup del DB), restore, distruzione/revoca della sessione, re-pairing, chi può accedervi e dove non deve mai finire sono descritti in [browser-profile.md](browser-profile.md) e gestiti con `scripts/browser-profile.sh`.
+
+## Verifiche senza contattare Cardmarket
+
+- `docker compose -f docker-compose.prod.yml run --rm --no-deps agent browser-selftest` — avvia Chromium con il profilo reale sotto l'hardening del container e carica solo una pagina `data:` locale. Con l'agent in esecuzione su un profilo in uso, fermalo prima (Chromium blocca il profilo).
+- `python -m agent healthcheck` — healthcheck del container (event loop vivo e contatto recente con l'API).

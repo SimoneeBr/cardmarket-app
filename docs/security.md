@@ -39,5 +39,17 @@ Definito in `apps/api/app/security/permissions.py` e applicato con dipendenze Fa
 - Nessun analytics di terze parti. Il service worker non mette mai in cache le risposte `/api`.
 - `DEBUG_CAPTURE_HTML` e le trace contengono dati dei clienti: solo per debug, retention limitata (`ARTIFACTS_KEEP`).
 
+## Primo avvio in produzione
+Il wizard web di creazione dell'amministratore è disattivato in produzione (altrimenti il primo visitatore potrebbe prendersi l'account admin). Si usa `python -m app.scripts.create_admin` (password letta in modo interattivo, mai da argomenti o variabili d'ambiente) oppure un `SETUP_TOKEN` temporaneo.
+
+## Configurazione e container
+- `docker-compose.prod.yml` non ha default per `POSTGRES_PASSWORD`, `AGENT_API_TOKEN`, `PAIRING_VNC_PASSWORD`, `DOMAIN`, `ACME_EMAIL`, `MOCK_CARDMARKET`: Compose si rifiuta di partire se mancano.
+- L'API si rifiuta di partire in produzione con token corti o segnaposto (`dev-only`, `change-me`...), password DB segnaposto, `COOKIE_SECURE=false`, `SETUP_TOKEN` debole.
+- Container con `no-new-privileges`, `cap_drop: ALL` (capability minime solo per postgres e caddy), limiti di risorse, utenti non-root per api/web/agent.
+- Solo Caddy pubblica porte; PostgreSQL su rete interna senza Internet; noVNC solo su `127.0.0.1`.
+- L'IP del client usato per il rate limiting è quello risolto da uvicorn, che accetta `X-Forwarded-For` solo dai proxy in `FORWARDED_ALLOW_IPS` (reti private Docker): un header falsificato non aggira i limiti.
+- Il browser profile è una credenziale: [browser-profile.md](browser-profile.md).
+- `scripts/check-repo-hygiene.sh` (anche in CI) blocca commit di `.env`, profili, artifact, trace, screenshot, dump, chiavi.
+
 ## Header e trasporto
-HSTS (Caddy), `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, `Cache-Control: no-store` sulle API.
+HSTS (Caddy), header `Server` rimosso, `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, `Cache-Control: no-store` sulle API.

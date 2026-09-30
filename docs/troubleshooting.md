@@ -14,7 +14,13 @@
 | Login riuscito ma subito disconnesso su http | `COOKIE_SECURE=true` senza HTTPS | in locale imposta `COOKIE_SECURE=false` |
 | Nessuna notifica push | VAPID mancanti, permesso negato, iPhone senza PWA installata | Impostazioni → Notifiche mostra la causa; su iOS aggiungi alla schermata Home |
 | Dopo la cancellazione dati nessuna notifica | la prima sync è un *initial import* silenzioso | normale |
-| API non parte in produzione | configurazione insicura | leggi il log: token agent < 32 caratteri o `COOKIE_SECURE=false` |
+| API non parte in produzione | configurazione insicura | `docker compose -f docker-compose.prod.yml logs api`: token agent corto/segnaposto, password DB segnaposto, `SETUP_TOKEN` debole |
+| `required variable ... is missing a value` | segreto mancante in `.env` (produzione) | imposta le voci `[PROD REQUIRED]` di `.env.example` |
+| `/setup` dice "Setup via web disabilitato" | comportamento voluto in produzione | `docker compose -f docker-compose.prod.yml exec api python -m app.scripts.create_admin --email ...` |
+| Chat senza template in produzione | `SEED_ON_START=false` | `docker compose -f docker-compose.prod.yml exec api python -m app.scripts.seed` (una volta) |
+| agent `unhealthy` | loop bloccato o API irraggiungibile da > 5 min | `docker compose ... exec agent python -m agent healthcheck` per il motivo; `logs agent` |
+| web `unhealthy` | API irraggiungibile dal container web | controlla `api`; `exec web wget -qO- http://127.0.0.1:3000/healthz` |
+| Pairing: pagina nera / screenshot vuoti | display virtuale non pronto | l'entrypoint attende Xvfb; verifica con `run --rm --no-deps -e HEADLESS=false agent browser-selftest` |
 | `Database non disponibile` (503) | PostgreSQL riavviato/giù | l'API si riconnette da sola (`pool_pre_ping`); controlla `docker compose logs postgres` |
 
 ## Log utili
@@ -24,7 +30,7 @@ docker compose logs api | grep <request_id|sync_id|action_id>
 ```
 Un'azione si segue end-to-end con il suo `correlation_id` (= request id della richiesta utente) e `action_id`.
 
-## Reset completo dell'ambiente locale (distrugge dati e sessione!)
+## Reset completo dell'ambiente di SVILUPPO (distrugge dati e sessione! mai in produzione)
 ```bash
 docker compose down -v
 ```

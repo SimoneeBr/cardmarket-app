@@ -10,10 +10,15 @@ export const ADMIN = {
 /** Creates the first administrator (first-run) if needed and stores a logged-in session. */
 export default async function globalSetup(config: FullConfig) {
   const baseURL = config.projects[0]?.use.baseURL as string;
-  const ctx = await request.newContext({ baseURL });
+  const ctx = await request.newContext({
+    baseURL,
+    ignoreHTTPSErrors: process.env.E2E_IGNORE_HTTPS_ERRORS === "1",
+  });
   const status = await (await ctx.get("/api/setup/status")).json();
   if (status.needs_admin) {
-    const res = await ctx.post("/api/setup/admin", { data: ADMIN });
+    const res = await ctx.post("/api/setup/admin", {
+      data: { ...ADMIN, setup_token: process.env.E2E_SETUP_TOKEN ?? null },
+    });
     if (!res.ok()) throw new Error(`setup failed: ${res.status()} ${await res.text()}`);
   } else {
     const res = await ctx.post("/api/auth/login", { data: { email: ADMIN.email, password: ADMIN.password } });

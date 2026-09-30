@@ -60,6 +60,11 @@ class Settings(BaseSettings):
 
     public_web_url: str = "http://localhost:3000"
 
+    # First-run administrator creation from the web wizard. In production the
+    # wizard is refused unless SETUP_TOKEN is set and supplied by the operator
+    # (otherwise whoever reaches the site first could claim the admin account).
+    setup_token: SecretStr = Field(default=SecretStr(""))
+
     @field_validator("database_url")
     @classmethod
     def _normalize_driver(cls, value: str) -> str:
@@ -78,12 +83,28 @@ class Settings(BaseSettings):
         if self.environment != "production":
             return
         problems: list[str] = []
-        if len(self.agent_api_token.get_secret_value()) < 32:
+        token = self.agent_api_token.get_secret_value()
+        if len(token) < 32:
             problems.append("AGENT_API_TOKEN must be at least 32 characters")
+        if _looks_like_placeholder(token):
+            problems.append("AGENT_API_TOKEN is a development placeholder")
+        if _looks_like_placeholder(self.database_url):
+            problems.append("DATABASE_URL uses a development placeholder password")
+        setup = self.setup_token.get_secret_value()
+        if setup and (len(setup) < 16 or _looks_like_placeholder(setup)):
+            problems.append("SETUP_TOKEN must be at least 16 random characters")
         if not self.cookie_secure:
             problems.append("COOKIE_SECURE must be true in production")
         if problems:
             raise RuntimeError("Invalid production configuration: " + "; ".join(problems))
+
+
+_PLACEHOLDER_MARKERS = ("change-me", "dev-only", "cmc-dev-password", "changeme")
+
+
+def _looks_like_placeholder(value: str) -> bool:
+    lowered = value.lower()
+    return any(marker in lowered for marker in _PLACEHOLDER_MARKERS)
 
 
 @lru_cache

@@ -30,6 +30,7 @@ class AgentSettings(BaseSettings):
     action_lease_seconds: int = 300
     max_actions_per_tick: int = 10
     max_details_per_sync: int = 25
+    health_file: Path = Path("/tmp/cmc-agent-health.json")  # noqa: S108 - per-container tmp
 
     # --- browser ----------------------------------------------------------------
     browser_profile_dir: Path = Path("/data/browser-profile")

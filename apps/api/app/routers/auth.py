@@ -2,6 +2,7 @@ from cmc_shared.enums import EntityType, UserRole
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from sqlalchemy import func, select
 
+from app.config import Settings
 from app.db import utcnow
 from app.deps import AppSettings, CurrentUser, DbSession, ReqCtx
 from app.models import User
@@ -28,6 +29,7 @@ from app.security.sessions import (
     revoke_session,
     revoke_user_sessions,
     set_auth_cookies,
+    tokens_match,
 )
 from app.services.audit import AuditAction, AuditResult, record
 from app.services.connection import agent_online, get_primary_connection
@@ -38,6 +40,12 @@ router = APIRouter(prefix="/api", tags=["auth"])
 def _me(user: User) -> MeOut:
     base = UserOut.model_validate(user).model_dump()
     return MeOut(**base, permissions=[str(p) for p in permissions_for(user.role)])
+
+
+def _web_setup_mode(settings: Settings) -> str:
+    if settings.environment != "production":
+        return "open"
+    return "token" if settings.setup_token.get_secret_value() else "disabled"
 
 
 def _user_count(db: DbSession) -> int:
@@ -55,6 +63,7 @@ def setup_status(db: DbSession, settings: AppSettings) -> SetupStatus:
         connection_status=conn.status,
         agent_online=agent_online(conn),
         has_synced=conn.last_successful_sync is not None,
+        web_setup=_web_setup_mode(settings),
     )
 
 
@@ -65,6 +74,17 @@ def setup_admin(
     """First-run only: create the initial administrator."""
     if not limiter.hit(f"setup:{ctx.ip}", 5, 300):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Troppi tentativi")
+    mode = _web_setup_mode(settings)
+    if mode == "disabled":
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Setup via web disabilitato in produzione: usa 'python -m app.scripts.create_admin' "
+            "oppure imposta SETUP_TOKEN",
+        )
+    if mode == "token" and not tokens_match(
+        body.setup_token, settings.setup_token.get_secret_value()
+    ):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Codice di setup non valido")
     # Lock the users table so two concurrent first-run requests cannot both win.
     if db.get_bind().dialect.name == "postgresql":
         db.execute(select(func.pg_advisory_xact_lock(4242)))

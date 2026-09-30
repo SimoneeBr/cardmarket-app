@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 from typing import Any, TypeVar
 
 import httpx
@@ -47,6 +48,7 @@ class ApiClient:
             transport=transport,
         )
         self._retries = retries
+        self.last_success: float | None = None  # monotonic-free wall clock, for health
 
     async def close(self) -> None:
         await self._client.aclose()
@@ -71,6 +73,7 @@ class ApiClient:
                 continue
             if res.status_code >= 400:
                 raise ApiUnavailableError(f"{res.status_code} on {path}: {res.text[:200]}")
+            self.last_success = time.time()
             return res
         raise ApiUnavailableError(f"API unavailable ({path}): {last}")
 

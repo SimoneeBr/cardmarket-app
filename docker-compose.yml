@@ -4,7 +4,24 @@
 #   docker compose up --build
 #
 # Web app: http://localhost:3000   API docs: http://localhost:8000/api/docs
+#
+# DEVELOPMENT ONLY: convenient defaults (including placeholder secrets) and
+# host ports for the API. Production uses docker-compose.prod.yml.
 name: cardmarket-companion
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  logging: *logging
 
 x-common-env: &common-env
   ENVIRONMENT: ${ENVIRONMENT:-development}
@@ -15,8 +32,9 @@ x-common-env: &common-env
 
 services:
   postgres:
+    <<: *hardening
     image: postgres:17-alpine
-    restart: unless-stopped
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-cmc}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cmc-dev-password}
@@ -30,10 +48,10 @@ services:
       retries: 20
 
   api:
+    <<: *hardening
     build:
       context: .
       dockerfile: infrastructure/docker/api.Dockerfile
-    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,16 +69,18 @@ services:
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
       RETENTION_MESSAGES_DAYS: ${RETENTION_MESSAGES_DAYS:-365}
       ARTIFACTS_DIR: /data/artifacts
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.16.0.0/12,10.0.0.0/8,192.168.0.0/16}
+      SETUP_TOKEN: ${SETUP_TOKEN:-}
     volumes:
       - agent-artifacts:/data/artifacts:ro
     ports:
       - "${API_PORT:-8000}:8000"
 
   agent:
+    <<: *hardening
     build:
       context: .
       dockerfile: infrastructure/docker/agent.Dockerfile
-    restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy
@@ -95,10 +115,10 @@ services:
     stop_grace_period: 30s
 
   web:
+    <<: *hardening
     build:
       context: .
       dockerfile: infrastructure/docker/web.Dockerfile
-    restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy

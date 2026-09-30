@@ -20,6 +20,7 @@ from agent.adapter import CardmarketAdapter, SessionState
 from agent.api_client import ApiClient
 from agent.config import AgentSettings
 from agent.errors import ApiUnavailableError
+from agent.health import write_health
 from agent.sync import SyncCycle
 
 log = logging.getLogger("cmc.agent")
@@ -180,8 +181,18 @@ class AgentRunner:
         await self.process_actions()
         await self.maybe_sync()
 
+    async def _health_writer(self) -> None:
+        while not self.stop_event.is_set():
+            try:
+                write_health(self.settings.health_file, self.api.last_success, str(self.status))
+            except OSError:
+                log.warning("cannot write health file", exc_info=True)
+            with contextlib.suppress(TimeoutError):
+                await asyncio.wait_for(self.stop_event.wait(), timeout=10)
+
     async def run(self) -> None:
         loop = asyncio.get_running_loop()
+        health_task = asyncio.create_task(self._health_writer())
         for sig in (signal.SIGTERM, signal.SIGINT):
             with contextlib.suppress(NotImplementedError):
                 loop.add_signal_handler(sig, self.stop_event.set)
@@ -212,6 +223,7 @@ class AgentRunner:
                     await asyncio.wait_for(self.stop_event.wait(), timeout=wait)
         finally:
             log.info("agent shutting down")
+            health_task.cancel()
             await self.adapter.close()
             await self.api.close()
 

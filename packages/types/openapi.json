@@ -3471,6 +3471,18 @@
             "minLength": 10,
             "title": "Password",
             "type": "string"
+          },
+          "setup_token": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setup Token"
           }
         },
         "required": [
@@ -3505,6 +3517,10 @@
           "push_enabled": {
             "title": "Push Enabled",
             "type": "boolean"
+          },
+          "web_setup": {
+            "title": "Web Setup",
+            "type": "string"
           }
         },
         "required": [
@@ -3513,7 +3529,8 @@
           "push_enabled",
           "connection_status",
           "agent_online",
-          "has_synced"
+          "has_synced",
+          "web_setup"
         ],
         "title": "SetupStatus",
         "type": "object"

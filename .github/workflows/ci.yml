@@ -4,7 +4,22 @@ on:
     branches: [main]
   pull_request:
 
+# No Cardmarket credentials are needed or used anywhere in CI:
+# every job runs against fixtures, a local fake site or the mock adapter.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/check-repo-hygiene.sh
+
   python:
     runs-on: ubuntu-latest
     services:
@@ -25,10 +40,10 @@ jobs:
           done
           apps/api/.venv/bin/pip install -e apps/agent
           apps/agent/.venv/bin/playwright install --with-deps chromium
-      - name: API
+      - name: API - lint, format, types, tests (PostgreSQL)
         working-directory: apps/api
         run: .venv/bin/ruff check . && .venv/bin/ruff format --check . && .venv/bin/mypy app && .venv/bin/pytest
-      - name: Agent
+      - name: Agent - lint, format, types, tests (Chromium vs local fake site)
         working-directory: apps/agent
         run: .venv/bin/ruff check . && .venv/bin/ruff format --check . && .venv/bin/mypy agent && .venv/bin/pytest
 
@@ -41,9 +56,25 @@ jobs:
       - run: npm ci
       - run: npm run typecheck && npm run lint:web && npm run test:web && npm run build:web
 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose files are valid
+        run: |
+          docker compose config -q
+          # production must refuse to render without secrets...
+          if docker compose -f docker-compose.prod.yml --env-file /dev/null config -q 2>/dev/null; then
+            echo "production compose rendered without secrets"; exit 1
+          fi
+      - name: Build images
+        run: docker compose build
+      - name: Production stack smoke test (mock mode, localhost TLS)
+        run: ./scripts/prod-smoke.sh
+
   e2e:
     runs-on: ubuntu-latest
-    needs: [python, web]
+    needs: [python, web, docker]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -53,4 +84,7 @@ jobs:
       - run: ./scripts/e2e.sh
       - uses: actions/upload-artifact@v4
         if: failure()
-        with: { name: playwright-report, path: tests/e2e/playwright-report }
+        with:
+          name: playwright-report
+          path: tests/e2e/playwright-report
+          retention-days: 7

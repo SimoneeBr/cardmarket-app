@@ -263,3 +263,37 @@ def test_backoff_is_exponential_and_capped() -> None:
     assert delays[0] < 1.5 and 8 <= delays[-1] <= 10
     backoff.reset()
     assert backoff.next_delay() < 1.5
+
+
+async def test_health_file_reflects_loop_and_api(
+    settings: AgentSettings, fake_api: FakeApi, tmp_path
+) -> None:  # type: ignore[no-untyped-def]
+    from agent.health import check_health
+
+    health = tmp_path / "health.json"
+    settings = settings.model_copy(update={"health_file": health})
+    fake_api.last_success = None  # type: ignore[attr-defined]
+    adapter = await _adapter(settings)
+    runner = AgentRunner(settings, fake_api, adapter)  # type: ignore[arg-type]
+    task = asyncio.create_task(runner.run())
+    await asyncio.sleep(0.2)
+    ok, detail = check_health(health)
+    assert not ok and "API" in detail  # loop alive but no API success recorded
+    fake_api.last_success = __import__("time").time()  # type: ignore[attr-defined]
+    await asyncio.sleep(0)
+    runner.stop_event.set()
+    await asyncio.wait_for(task, 5)
+
+
+def test_health_check_rules(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import time
+
+    from agent.health import check_health, write_health
+
+    path = tmp_path / "h.json"
+    assert check_health(path) == (False, "no health file yet")
+    write_health(path, time.time(), "CONNECTED")
+    assert check_health(path)[0] is True
+    assert check_health(path, now=time.time() + 120)[0] is False  # loop stalled
+    write_health(path, time.time() - 1000, "CONNECTED")
+    assert check_health(path)[0] is False  # API not reachable for too long

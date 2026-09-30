@@ -27,6 +27,7 @@ from agent.errors import NavigationTimeoutError, NetworkError
 log = logging.getLogger("cmc.agent.browser")
 
 _SAFE_NAME = re.compile(r"[^a-zA-Z0-9_.-]+")
+_SCREENSHOT_ATTEMPTS = 4
 
 
 def _prepare_profile(profile: Path) -> Path:
@@ -134,6 +135,21 @@ class BrowserSession:
         path.write_text(data)
         return path.name
 
+    async def screenshot(self, **kwargs: object) -> bytes:
+        """Page screenshot with a few short retries.
+
+        In headed mode (pairing, on Xvfb) Chromium often refuses the first capture
+        ("Unable to capture screenshot") until the window has been composited.
+        """
+        for attempt in range(1, _SCREENSHOT_ATTEMPTS + 1):
+            try:
+                return await self.page.screenshot(**kwargs)  # type: ignore[arg-type]
+            except PlaywrightError:
+                if attempt == _SCREENSHOT_ATTEMPTS:
+                    raise
+                await asyncio.sleep(0.3 * attempt)
+        raise AssertionError("unreachable")
+
     async def capture_failure(self, label: str) -> list[str]:
         """Screenshot (+ trace, + HTML in debug) for post-mortem analysis."""
         if self._page is None or self._page.is_closed():
@@ -143,7 +159,7 @@ class BrowserSession:
         saved: list[str] = []
         try:
             shot = self._artifact_path(f"{base}.png")
-            await self.page.screenshot(path=str(shot), full_page=True)
+            await self.screenshot(path=str(shot), full_page=True)
             saved.append(shot.name)
             if self.settings.debug_capture_html:
                 saved.append(await self._save_text(f"{base}.html", await self.page.content()))
