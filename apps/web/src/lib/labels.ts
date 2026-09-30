@@ -59,6 +59,7 @@ export const ERROR_CODE: Record<ErrorCode, string> = {
   AUTH_ERROR: "Autenticazione Cardmarket non valida",
   NETWORK_ERROR: "Rete / Cardmarket non raggiungibile",
   CARDMARKET_CHANGED: "Pagina Cardmarket non riconosciuta (sito cambiato?)",
+  ACCESS_BLOCKED: "Accesso bloccato dal firewall (Cloudflare) prima di raggiungere Cardmarket",
   SELECTOR_NOT_FOUND: "Elemento della pagina non trovato o ambiguo",
   TIMEOUT: "Timeout",
   ACTION_FAILED: "Azione non riuscita",

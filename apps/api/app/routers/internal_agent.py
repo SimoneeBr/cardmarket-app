@@ -32,7 +32,12 @@ from app.logging import bind_correlation
 from app.models import Action, CardmarketConnection, SyncRun
 from app.services import action_queue, sync_engine
 from app.services.audit import AuditAction, AuditResult, record
-from app.services.connection import get_primary_connection, pop_commands, set_status
+from app.services.connection import (
+    get_primary_connection,
+    is_access_blocked,
+    pop_commands,
+    set_status,
+)
 from app.services.runtime_settings import get_runtime_settings
 
 log = logging.getLogger("cmc.agent_api")
@@ -40,6 +45,21 @@ log = logging.getLogger("cmc.agent_api")
 router = APIRouter(
     prefix="/internal/agent", tags=["internal-agent"], dependencies=[Depends(verify_agent_token)]
 )
+
+
+def _agent_response(
+    conn: CardmarketConnection,
+    interval: int,
+    sync_enabled: bool,
+    commands: list[AgentCommand] | None = None,
+) -> HeartbeatResponse:
+    blocked = is_access_blocked(conn)
+    return HeartbeatResponse(
+        sync_enabled=sync_enabled and conn.status != ConnectionStatus.DISCONNECTED and not blocked,
+        sync_interval_seconds=interval,
+        commands=commands or [],
+        access_blocked=blocked,
+    )
 
 
 @router.post("/heartbeat", response_model=HeartbeatResponse)
@@ -53,11 +73,7 @@ def heartbeat(body: HeartbeatRequest, db: DbSession) -> HeartbeatResponse:
     commands = [AgentCommand.model_validate(c) for c in pop_commands(conn)]
     runtime = get_runtime_settings(db)
     db.commit()
-    return HeartbeatResponse(
-        sync_enabled=runtime.sync_enabled and conn.status != ConnectionStatus.DISCONNECTED,
-        sync_interval_seconds=runtime.sync_interval_seconds,
-        commands=commands,
-    )
+    return _agent_response(conn, runtime.sync_interval_seconds, runtime.sync_enabled, commands)
 
 
 def _admin_disconnected(
@@ -111,10 +127,7 @@ def report_session(body: SessionReport, db: DbSession) -> HeartbeatResponse:
         )
     runtime = get_runtime_settings(db)
     db.commit()
-    return HeartbeatResponse(
-        sync_enabled=runtime.sync_enabled and conn.status != ConnectionStatus.DISCONNECTED,
-        sync_interval_seconds=runtime.sync_interval_seconds,
-    )
+    return _agent_response(conn, runtime.sync_interval_seconds, runtime.sync_enabled)
 
 
 @router.post("/sync/start", response_model=SyncStartResponse)

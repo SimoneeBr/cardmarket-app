@@ -5,6 +5,7 @@
 | Banner "agent offline" | container agent fermo o non raggiunge l'API | `docker compose ps`, `docker compose logs agent`; verifica `AGENT_API_TOKEN` uguale in api e agent |
 | "Sessione Cardmarket scaduta" / "Autenticazione richiesta" | Cardmarket ha chiesto un nuovo login | Impostazioni → Connessione → **Riconnetti**; se resta, **Avvia collegamento** (pairing) |
 | Pairing in timeout | nessuno ha completato il login entro `PAIRING_TIMEOUT_SECONDS` | abilita noVNC (`PAIRING_VNC_ENABLED`), apri il viewer e ripeti |
+| `ACCESS_BLOCKED` (firewall Cloudflare) | Cardmarket non raggiunto; l'agent ha sospeso le navigazioni automatiche | verifica l'accesso da un browser normale sulla stessa rete; eventualmente contatta Cardmarket con il Ray ID; poi *Riconnetti*. Non aggirare il blocco |
 | Errore `CARDMARKET_CHANGED` | pagina non riconosciuta (layout cambiato o selettori non calibrati) | guarda lo screenshot in Operazioni → Errori; esegui `docker compose run --rm agent calibrate`; aggiorna `selectors.py` |
 | Messaggio "Esito da verificare" (UNKNOWN) | inviato ma non verificabile | controlla su Cardmarket; in Operazioni: "Verificato: eseguita" oppure "Riprova" (verifica prima di reinviare) |
 | Azioni sempre `NEEDS_ATTENTION` in live | selettori di scrittura non `verified` | comportamento voluto finché la calibrazione non è completata |

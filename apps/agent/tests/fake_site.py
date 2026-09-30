@@ -9,6 +9,7 @@ import html
 import threading
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
@@ -26,6 +27,9 @@ class SiteState:
     swallow_messages: bool = False  # accept the POST but never show the message
     login_after_polls: int | None = None
     polls: int = 0
+    cloudflare_blocked: bool = False  # serve the real (anonymised) Cloudflare block page
+    gets: int = 0  # page navigations (sub-resources excluded)
+    paths: list[str] = field(default_factory=list)
     posts: list[dict[str, Any]] = field(default_factory=list)
     orders: dict[str, dict[str, Any]] = field(
         default_factory=lambda: {
@@ -71,7 +75,14 @@ def _page(state: SiteState, body: str) -> str:
     return f"<html><body>{HEADER_IN if state.logged_in else HEADER_OUT}<main>{body}</main></body></html>"
 
 
+CLOUDFLARE_BLOCK = (
+    Path(__file__).parent / "fixtures" / "cardmarket" / "cloudflare_blocked.html"
+).read_text(encoding="utf-8")
+
+
 def render(state: SiteState, path: str) -> tuple[int, str]:
+    if state.cloudflare_blocked:
+        return 403, CLOUDFLARE_BLOCK
     if path in ("/it/Magic/Login",) or not state.logged_in:
         if state.login_after_polls is not None:
             state.polls += 1
@@ -188,6 +199,9 @@ class FakeSite:
 
             def do_GET(self) -> None:
                 path = urlparse(self.path).path
+                site.state.paths.append(path)
+                if not path.startswith("/cdn-cgi/") and path != "/favicon.ico":
+                    site.state.gets += 1  # page navigations only, not sub-resources
                 status, body = render(site.state, path)
                 cookie = (
                     {"Set-Cookie": "cm_session=abc; Path=/; Max-Age=86400"}

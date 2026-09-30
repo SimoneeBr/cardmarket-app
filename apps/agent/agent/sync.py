@@ -21,7 +21,7 @@ from cmc_shared.protocol import CartsBatch, ConversationsBatch, OrdersBatch
 
 from agent.adapter import CardmarketAdapter, SessionState
 from agent.api_client import ApiClient
-from agent.errors import AgentError, AuthRequiredError, classify
+from agent.errors import AccessBlockedError, AgentError, AuthRequiredError, classify
 
 log = logging.getLogger("cmc.agent.sync")
 
@@ -64,7 +64,7 @@ async def _details_for_changed[S: _Record, D](
         try:
             details.append(await fetch(summary))
             push.append(summary)
-        except AuthRequiredError:
+        except (AuthRequiredError, AccessBlockedError):
             raise
         except AgentError as exc:
             if exc.code == ErrorCode.CARDMARKET_CHANGED:
@@ -113,7 +113,7 @@ class SyncCycle:
             ):
                 try:
                     stats[entity] = await step(run_id, start, budget, errors)
-                except AuthRequiredError:
+                except (AuthRequiredError, AccessBlockedError):
                     raise
                 except AgentError as exc:
                     # One section of the site changed: keep syncing the others.
@@ -128,6 +128,20 @@ class SyncCycle:
                     stats.setdefault("artifacts", []).extend(exc.artifacts)
                     if len(failed_entities) == 3:
                         raise
+        except AccessBlockedError as exc:
+            # Stop immediately: no further Cardmarket page in this cycle (or later ones,
+            # see AgentRunner.access_blocked).
+            await self.report_session(SessionState(ConnectionStatus.ERROR, exc.message, exc.code))
+            await self.api.sync_complete(
+                run_id,
+                SyncRunStatus.FAILED,
+                error_code=exc.code,
+                error_message=exc.message,
+                artifacts=exc.artifacts,
+            )
+            return SyncOutcome(
+                ran=True, status=SyncRunStatus.FAILED, reason="blocked", errors=[exc.message]
+            )
         except AuthRequiredError as exc:
             await self.report_session(
                 SessionState(ConnectionStatus.SESSION_EXPIRED, exc.message, exc.code)

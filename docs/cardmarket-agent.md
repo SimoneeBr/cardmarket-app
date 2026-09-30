@@ -49,7 +49,16 @@ In alternativa, pairing su un desktop: `MOCK_CARDMARKET=false BROWSER_PROFILE_DI
 - Le azioni di scrittura restano in coda (non vengono tentate) finché la sessione non torna `CONNECTED`.
 - **Riconnetti** (`VERIFY_SESSION`) ricontrolla il profilo senza nuovo login; se non basta, **Avvia collegamento**.
 
-## Action queue e verifica
+## Accesso bloccato da un firewall (`ACCESS_BLOCKED`)
+
+Se una pagina è il blocco del firewall di Cloudflare ("Sorry, you have been blocked"), Cardmarket non è stato raggiunto e lo stato della sessione è **sconosciuto**. Il detector restituisce `ERROR` / `ACCESS_BLOCKED` con il Ray ID nel messaggio (mai l'IP).
+
+- L'agent **sospende ogni navigazione automatica**: niente sync programmati né `SYNC_NOW`, niente controllo della sessione all'avvio, nessuna azione di scrittura. Un blocco durante un sync interrompe subito il ciclo; un'azione colpita dal blocco non viene eseguita e resta in coda. Il pairing si interrompe subito.
+- Lo stato è salvato dall'API (connessione `ERROR` + `last_error_code=ACCESS_BLOCKED`) e comunicato all'agent a ogni heartbeat (`access_blocked`), quindi **sopravvive ai riavvii** dell'agent. Gli admin ricevono una notifica una volta sola, all'inizio del blocco.
+- Non esiste un retry automatico. **Resume**: solo con un'azione esplicita dell'operatore, cioè *Impostazioni → Connessione → Riconnetti* (`VERIFY_SESSION`: un solo controllo) o *Avvia collegamento*. Se la pagina risulta ancora bloccata, il blocco resta.
+- Prima di riconnettere verifica l'accesso da un browser normale. Non si tenta mai di aggirare il firewall.
+
+
 
 | Esito agent | Stato azione | Messaggio |
 |---|---|---|

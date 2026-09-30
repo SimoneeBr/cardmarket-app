@@ -46,6 +46,9 @@ class HeartbeatResponse(BaseModel):
     sync_enabled: bool
     sync_interval_seconds: int
     commands: list[AgentCommand] = Field(default_factory=list)
+    # True while the connection is ERROR/ACCESS_BLOCKED: the agent must not start
+    # any automatic navigation to Cardmarket (only explicit pair/verify actions).
+    access_blocked: bool = False
 
 
 class SessionReport(BaseModel):

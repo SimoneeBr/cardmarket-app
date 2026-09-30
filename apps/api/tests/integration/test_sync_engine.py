@@ -232,3 +232,72 @@ def test_admin_disconnect_is_not_undone_by_agent(admin_client: TestClient, agent
     admin_client.post("/api/connection/reconnect")
     agent.post("/session", {"status": "CONNECTED", "authenticated": True})
     assert admin_client.get("/api/connection/status").json()["status"] == "CONNECTED"
+
+
+BLOCKED = {
+    "status": "ERROR",
+    "error_code": "ACCESS_BLOCKED",
+    "message": "Access blocked by Cloudflare before reaching Cardmarket; "
+    "session state unknown (Cloudflare Ray ID a43632d17d8bea6f)",
+}
+
+
+def test_access_blocked_is_persisted_and_stops_automatic_sync(
+    db: Session, client: TestClient, agent: AgentSim
+) -> None:
+    make_user(db, UserRole.ADMIN)
+    agent.connect()
+    res = agent.post("/session", BLOCKED)
+    assert res["access_blocked"] is True and res["sync_enabled"] is False
+    # survives an agent restart: every heartbeat keeps saying "blocked"
+    hb = agent.post(
+        "/heartbeat",
+        {"agent_id": "agent-test", "version": "t", "mode": "LIVE", "connection_status": "ERROR"},
+    )
+    assert hb["access_blocked"] is True and hb["sync_enabled"] is False
+    start = client.post(
+        "/internal/agent/sync/start", json={"agent_id": "a"}, headers=agent_headers()
+    )
+    assert start.json()["granted"] is False
+    # admins see the reason (with Ray ID) and are notified exactly once
+    agent.post("/session", BLOCKED)
+    agent.post("/session", BLOCKED)
+    notes = db.scalars(select(Notification)).all()
+    assert (
+        len(notes) == 1
+        and "ACCESS_BLOCKED" in notes[0].body
+        and "a43632d17d8bea6f" in notes[0].body
+    )
+
+
+def test_access_blocked_clears_only_on_explicit_session_result(
+    admin_client: TestClient, agent: AgentSim
+) -> None:
+    agent.connect()
+    agent.post("/session", BLOCKED)
+    status = admin_client.get("/api/connection/status").json()
+    assert (status["status"], status["last_error_code"]) == ("ERROR", "ACCESS_BLOCKED")
+    assert "a43632d17d8bea6f" in status["last_error"]
+    # explicit operator action: reconnect -> the agent reports CONNECTED
+    assert admin_client.post("/api/connection/reconnect").status_code == 202
+    res = agent.post("/session", {"status": "CONNECTED", "authenticated": True})
+    assert res["access_blocked"] is False and res["sync_enabled"] is True
+
+
+def test_other_errors_do_not_set_access_blocked(agent: AgentSim) -> None:
+    agent.connect()
+    for code in ("CARDMARKET_CHANGED", "NETWORK_ERROR"):
+        res = agent.post("/session", {"status": "ERROR", "error_code": code, "message": "x"})
+        assert res["access_blocked"] is False
+    res = agent.post("/session", {"status": "SESSION_EXPIRED", "error_code": "AUTH_ERROR"})
+    assert res["access_blocked"] is False
+
+
+def test_blocked_sync_run_is_not_double_notified(db: Session, agent: AgentSim) -> None:
+    make_user(db, UserRole.ADMIN)
+    agent.connect()
+    agent.full_sync()
+    agent.start()
+    agent.post("/session", BLOCKED)  # block detected mid-sync
+    agent.complete("FAILED", error_code="ACCESS_BLOCKED", error_message=BLOCKED["message"])
+    assert _notifications(db) == 1

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from cmc_shared.enums import ActionType
+from cmc_shared.enums import ActionType, ConnectionStatus, ErrorCode
 from cmc_shared.protocol import (
     ActionResultRequest,
     CartsBatch,
@@ -60,19 +60,33 @@ class FakeApi:
         self.commands: list[dict[str, Any]] = []
         self.heartbeats = 0
         self.last_success: float | None = None
+        self.blocked = False  # mimics the API's persisted ERROR/ACCESS_BLOCKED state
+        self.sync_starts = 0
 
     async def heartbeat(self, req: HeartbeatRequest) -> HeartbeatResponse:
         self.heartbeats += 1
         commands, self.commands = self.commands, []
         return HeartbeatResponse.model_validate(
-            {"sync_enabled": True, "sync_interval_seconds": 30, "commands": commands}
+            {
+                "sync_enabled": not self.blocked,
+                "sync_interval_seconds": 30,
+                "commands": commands,
+                "access_blocked": self.blocked,
+            }
         )
 
     async def report_session(self, req: SessionReport) -> HeartbeatResponse:
         self.sessions.append(req)
-        return HeartbeatResponse(sync_enabled=True, sync_interval_seconds=30)
+        if req.error_code == ErrorCode.ACCESS_BLOCKED:
+            self.blocked = True
+        elif req.status == ConnectionStatus.CONNECTED:
+            self.blocked = False
+        return HeartbeatResponse(
+            sync_enabled=not self.blocked, sync_interval_seconds=30, access_blocked=self.blocked
+        )
 
     async def sync_start(self, agent_id: str, trigger: str) -> SyncStartResponse:
+        self.sync_starts += 1
         return SyncStartResponse(
             granted=True,
             sync_run_id=1,
@@ -148,3 +162,16 @@ def send_action(
         idempotency_key=f"k{action_id}",
         recovery=recovery,
     )
+
+
+async def block_external_requests(adapter: Any) -> None:
+    """Safety net for browser tests: abort every request not aimed at the local fake site."""
+
+    async def guard(route: Any) -> None:
+        url = route.request.url
+        if url.startswith(("http://127.0.0.1", "data:", "about:")):
+            await route.continue_()
+        else:
+            await route.abort()
+
+    await adapter.browser.page.context.route("**/*", guard)

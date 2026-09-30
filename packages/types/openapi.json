@@ -1456,6 +1456,7 @@
           "AUTH_ERROR",
           "NETWORK_ERROR",
           "CARDMARKET_CHANGED",
+          "ACCESS_BLOCKED",
           "SELECTOR_NOT_FOUND",
           "TIMEOUT",
           "ACTION_FAILED",
@@ -1565,6 +1566,11 @@
       },
       "HeartbeatResponse": {
         "properties": {
+          "access_blocked": {
+            "default": false,
+            "title": "Access Blocked",
+            "type": "boolean"
+          },
           "commands": {
             "items": {
               "$ref": "#/components/schemas/AgentCommand"

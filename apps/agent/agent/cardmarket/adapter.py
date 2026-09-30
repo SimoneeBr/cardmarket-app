@@ -2,7 +2,7 @@
 
 import logging
 
-from cmc_shared.enums import ConnectionStatus
+from cmc_shared.enums import ConnectionStatus, ErrorCode
 from cmc_shared.models import (
     NormalizedCart,
     NormalizedCartSummary,
@@ -25,7 +25,7 @@ from agent.cardmarket.parsers.messages import parse_thread
 from agent.cardmarket.parsers.orders import parse_order_detail
 from agent.cardmarket.urls import CardmarketUrls
 from agent.config import AgentSettings
-from agent.errors import AuthRequiredError
+from agent.errors import AccessBlockedError, AuthRequiredError
 
 log = logging.getLogger("cmc.agent.live")
 
@@ -58,6 +58,9 @@ class PlaywrightCardmarketAdapter:
         """Navigate; abort immediately if Cardmarket asks to log in again."""
         html = await self.browser.goto(url)
         state = detect_session(html)
+        if state.error_code == ErrorCode.ACCESS_BLOCKED:
+            artifacts = await self.browser.capture_failure("access-blocked")
+            raise AccessBlockedError(state.message or "access blocked", artifacts=artifacts)
         if state.status in _AUTH_LOST:
             artifacts = await self.browser.capture_failure("auth-required")
             raise AuthRequiredError(state.message or "authentication required", artifacts=artifacts)

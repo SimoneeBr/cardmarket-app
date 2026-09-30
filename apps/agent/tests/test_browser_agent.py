@@ -22,7 +22,7 @@ from agent.cardmarket.adapter import PlaywrightCardmarketAdapter
 from agent.cardmarket.urls import CardmarketUrls
 from agent.config import AgentSettings
 from agent.errors import AuthRequiredError
-from tests.conftest import send_action
+from tests.conftest import block_external_requests, send_action
 from tests.fake_site import FakeSite
 
 pytestmark = pytest.mark.browser
@@ -43,6 +43,7 @@ async def live(
         live_settings, urls=CardmarketUrls(site.base_url, "it", "Magic")
     )
     await adapter.start()
+    await block_external_requests(adapter)
     yield adapter
     await adapter.close()
 
@@ -196,10 +197,12 @@ async def test_profile_persists_session_across_restarts(
     urls = CardmarketUrls(site.base_url, "it", "Magic")
     first = PlaywrightCardmarketAdapter(live_settings, urls=urls)
     await first.start()
+    await block_external_requests(first)
     await first.check_session()  # site sets a session cookie
     await first.close()
     second = PlaywrightCardmarketAdapter(live_settings, urls=urls)
     await second.start()
+    await block_external_requests(second)
     cookies = await second.browser.page.context.cookies()
     await second.close()
     assert any(c["name"] == "cm_session" for c in cookies)

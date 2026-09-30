@@ -37,6 +37,16 @@ def get_primary_connection(db: Session, *, for_update: bool = False) -> Cardmark
     return conn
 
 
+def is_access_blocked(conn: CardmarketConnection) -> bool:
+    """Cardmarket refused by an external firewall: automatic navigation suspended.
+
+    Stays true until an operator-requested pair/verify reports another state.
+    """
+    return (
+        conn.status == ConnectionStatus.ERROR and conn.last_error_code == ErrorCode.ACCESS_BLOCKED
+    )
+
+
 def agent_online(conn: CardmarketConnection) -> bool:
     if conn.agent_last_seen_at is None:
         return False
@@ -55,6 +65,7 @@ def set_status(
 ) -> bool:
     """Apply a status transition; returns True if the status changed."""
     previous = conn.status
+    was_blocked = is_access_blocked(conn)
     now = utcnow()
     if status == ConnectionStatus.ERROR or status in _AUTH_LOST:
         conn.last_error = message
@@ -65,6 +76,19 @@ def set_status(
     if status == ConnectionStatus.CONNECTED and authenticated:
         conn.last_authentication = now
         _touch_session(db, conn, paired=previous != ConnectionStatus.CONNECTED)
+    if (
+        status == ConnectionStatus.ERROR
+        and error_code == ErrorCode.ACCESS_BLOCKED
+        and not was_blocked
+    ):
+        # Edge-triggered: operators are notified once, when the block starts.
+        events.emit(
+            db,
+            DomainEventType.SYNC_FAILED,
+            EntityType.CONNECTION,
+            conn.id,
+            {"error_code": str(ErrorCode.ACCESS_BLOCKED), "error": message},
+        )
     if previous == status:
         return False
 

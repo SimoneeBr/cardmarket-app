@@ -33,7 +33,7 @@ from cmc_shared.models import (
 from cmc_shared.protocol import ActionResultRequest, ClaimedAction
 
 from agent.adapter import CardmarketAdapter, SessionState
-from agent.errors import AgentError, AuthRequiredError, UnsafeUIError, classify
+from agent.errors import AccessBlockedError, AgentError, AuthRequiredError, UnsafeUIError, classify
 
 log = logging.getLogger("cmc.agent.actions")
 
@@ -112,6 +112,13 @@ class ActionExecutor:
             )
         try:
             return await handler(action)
+        except AccessBlockedError as exc:
+            # Nothing was submitted (the block happened on page load). The action
+            # stays queued; write actions are not claimed until the session is back.
+            await self.report_session(SessionState(ConnectionStatus.ERROR, exc.message, exc.code))
+            return _result(
+                ActionOutcome.RETRY, code=exc.code, message=exc.message, artifacts=exc.artifacts
+            )
         except AuthRequiredError as exc:
             await self.report_session(
                 SessionState(ConnectionStatus.SESSION_EXPIRED, exc.message, exc.code)

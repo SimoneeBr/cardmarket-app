@@ -11,7 +11,7 @@ import random
 import signal
 import time
 
-from cmc_shared.enums import AgentCommandType, AgentMode, ConnectionStatus
+from cmc_shared.enums import AgentCommandType, AgentMode, ConnectionStatus, ErrorCode
 from cmc_shared.logging import correlation_var
 from cmc_shared.protocol import AgentCommand, HeartbeatRequest, HeartbeatResponse, SessionReport
 
@@ -53,6 +53,13 @@ class AgentRunner:
         self.next_sync_at = 0.0
         self.next_heartbeat_at = 0.0
         self.sync_now = False
+        # Latched when Cardmarket access is refused by an external firewall
+        # (ErrorCode.ACCESS_BLOCKED). While set, NO automatic navigation happens
+        # (no startup check, no scheduled or SYNC_NOW sync). Cleared only when an
+        # operator-requested session action (VERIFY_SESSION / PAIR_SESSION) reports
+        # CONNECTED. Also restored from the API on every heartbeat, so it survives
+        # agent restarts.
+        self.access_blocked: str | None = None
         self.api_backoff = Backoff()
         self.sync_backoff = Backoff(base=settings.sync_interval_seconds, cap=900)
         self.executor = ActionExecutor(
@@ -64,7 +71,21 @@ class AgentRunner:
 
     # --------------------------------------------------------------- reporting
 
+    def _update_access_block(self, state: SessionState) -> None:
+        if state.error_code == ErrorCode.ACCESS_BLOCKED:
+            if self.access_blocked is None:
+                log.error(
+                    "cardmarket access blocked: automatic navigation suspended until an "
+                    "operator verifies the session",
+                    extra={"reason": state.message},
+                )
+            self.access_blocked = state.message or "access blocked"
+        elif state.connected and self.access_blocked is not None:
+            log.info("cardmarket access restored: automatic navigation resumed")
+            self.access_blocked = None
+
     async def report_session(self, state: SessionState) -> None:
+        self._update_access_block(state)
         if state.status == self.status and state.status == ConnectionStatus.CONNECTED:
             return  # nothing new; avoid chatty updates
         response = await self.api.report_session(
@@ -83,6 +104,10 @@ class AgentRunner:
     def _apply_settings(self, response: HeartbeatResponse) -> None:
         self.sync_enabled = response.sync_enabled
         self.sync_interval = response.sync_interval_seconds
+        if response.access_blocked and self.access_blocked is None:
+            # Persisted by the API (e.g. after an agent restart). Never cleared from
+            # here: only an explicit session action reporting CONNECTED clears it.
+            self.access_blocked = "access blocked (reported by the API)"
 
     async def heartbeat(self) -> None:
         response = await self.api.heartbeat(
@@ -102,6 +127,9 @@ class AgentRunner:
     async def handle_command(self, command: AgentCommand) -> None:
         log.info("command received", extra={"command": str(command.type)})
         if command.type == AgentCommandType.SYNC_NOW:
+            if self.access_blocked:
+                log.warning("SYNC_NOW ignored: cardmarket access is blocked")
+                return
             self.sync_now = True
         elif command.type == AgentCommandType.DISCONNECT:
             await self.adapter.disconnect()
@@ -157,7 +185,11 @@ class AgentRunner:
             return
         trigger = "manual" if self.sync_now else "schedule"
         self.sync_now = False
-        if not self.sync_enabled or self.status == ConnectionStatus.DISCONNECTED:
+        if (
+            self.access_blocked
+            or not self.sync_enabled
+            or self.status == ConnectionStatus.DISCONNECTED
+        ):
             self.next_sync_at = time.monotonic() + self.sync_interval
             return
         token = correlation_var.set({})
@@ -232,6 +264,10 @@ class AgentRunner:
         while not self.stop_event.is_set():
             try:
                 await self.heartbeat()
+                if self.access_blocked:
+                    # Do not probe Cardmarket at startup while access is blocked.
+                    log.warning("startup session check skipped: cardmarket access is blocked")
+                    return
                 state = await self.adapter.check_session()
                 self.status = ConnectionStatus.DISCONNECTED  # force a first report
                 await self.report_session(state)

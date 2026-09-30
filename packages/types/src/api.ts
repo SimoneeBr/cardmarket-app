@@ -1537,7 +1537,7 @@ export interface components {
          * ErrorCode
          * @enum {string}
          */
-        ErrorCode: "AUTH_ERROR" | "NETWORK_ERROR" | "CARDMARKET_CHANGED" | "SELECTOR_NOT_FOUND" | "TIMEOUT" | "ACTION_FAILED" | "VERIFICATION_FAILED" | "DATABASE_ERROR" | "UNKNOWN";
+        ErrorCode: "AUTH_ERROR" | "NETWORK_ERROR" | "CARDMARKET_CHANGED" | "ACCESS_BLOCKED" | "SELECTOR_NOT_FOUND" | "TIMEOUT" | "ACTION_FAILED" | "VERIFICATION_FAILED" | "DATABASE_ERROR" | "UNKNOWN";
         /** ErrorsOut */
         ErrorsOut: {
             /** Actions */
@@ -1566,6 +1566,11 @@ export interface components {
         };
         /** HeartbeatResponse */
         HeartbeatResponse: {
+            /**
+             * Access Blocked
+             * @default false
+             */
+            access_blocked: boolean;
             /** Commands */
             commands?: components["schemas"]["AgentCommand"][];
             /** Sync Enabled */

@@ -93,6 +93,13 @@ export default function ConnectionPage() {
             <p className="font-semibold">{connection.last_error_code ? ERROR_CODE[connection.last_error_code] : "Errore"}</p>
             <p>{connection.last_error}</p>
             <p className="mt-1 text-xs opacity-75">{formatDateTime(connection.last_error_at)}</p>
+            {connection.last_error_code === "ACCESS_BLOCKED" && (
+              <p className="mt-2" data-testid="access-blocked-hint">
+                L&apos;agent ha sospeso ogni navigazione automatica verso Cardmarket. Verifica
+                prima l&apos;accesso da un browser normale; poi usa &quot;Riconnetti&quot; per un
+                solo controllo esplicito della sessione.
+              </p>
+            )}
           </div>
         )}
       </div>

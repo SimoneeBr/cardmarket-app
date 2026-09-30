@@ -19,6 +19,16 @@ class AuthRequiredError(AgentError):
     code = ErrorCode.AUTH_ERROR
 
 
+class AccessBlockedError(AgentError):
+    """An external firewall (e.g. Cloudflare) refused the request before Cardmarket.
+
+    Not retryable automatically: navigation stays suspended until an operator
+    explicitly asks to verify the session again.
+    """
+
+    code = ErrorCode.ACCESS_BLOCKED
+
+
 class NetworkError(AgentError):
     code = ErrorCode.NETWORK_ERROR
     retryable = True

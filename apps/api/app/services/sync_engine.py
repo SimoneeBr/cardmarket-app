@@ -205,8 +205,10 @@ def complete_run(
         conn.last_error = error_message
         conn.last_error_code = error_code or ErrorCode.UNKNOWN
         conn.last_error_at = now
-        # Edge-triggered: notify only on the first failure of a streak.
-        if previous is None or previous.status != SyncRunStatus.FAILED:
+        # Edge-triggered: notify only on the first failure of a streak. An access
+        # block is notified by the connection state change (connection.set_status).
+        first_failure = previous is None or previous.status != SyncRunStatus.FAILED
+        if first_failure and error_code != ErrorCode.ACCESS_BLOCKED:
             events.emit(
                 db,
                 DomainEventType.SYNC_FAILED,

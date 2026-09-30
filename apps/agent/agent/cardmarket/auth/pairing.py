@@ -41,9 +41,15 @@ async def run_pairing(
             except AgentError as exc:
                 log.debug("pairing poll failed: %s", exc.message)
                 continue
+            if state.error_code == ErrorCode.ACCESS_BLOCKED:
+                log.error("pairing aborted: access blocked by an external firewall")
+                return state
             if state.connected:
                 # Re-check on a normal page so the result does not depend on a redirect.
                 state = detect_session(await browser.goto(urls.home))
+                if state.error_code == ErrorCode.ACCESS_BLOCKED:
+                    log.error("pairing aborted: access blocked by an external firewall")
+                    return state
                 if state.connected:
                     log.info("pairing completed")
                     return state
