@@ -1,0 +1,112 @@
+# =============================================================================
+# Cardmarket Companion - never commit secrets, sessions or customer data
+# =============================================================================
+
+# --- environment / secrets ----------------------------------------------------
+.env
+.env.*
+!.env.example
+*.env
+secrets/
+credentials/
+credentials*.json
+*credentials*
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa*
+id_ed25519*
+.vnc/
+.htpasswd
+.npmrc.local
+
+# --- runtime storage ------------------------------------------------------------
+# /data holds the browser profile, artifacts and mock state inside containers;
+# the same layout may be mounted locally.
+data/
+storage/
+.mock/
+
+# --- browser profiles (contain the authenticated Cardmarket session!) -----------
+browser-profile/
+browser-profiles/
+browser_profile/
+/profile/
+/profiles/
+apps/agent/profile/
+chrome-profile/
+user-data-dir/
+playwright_chromiumdev_profile-*/
+
+# --- Playwright traces, reports, videos ------------------------------------------
+*.trace.zip
+trace.zip
+traces/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+tests/e2e/.auth/
+*.webm
+
+# --- screenshots / captured pages (may contain real customer data) --------------
+# Failure artifacts written by the agent (screenshots, HTML captures, traces).
+artifacts/
+screenshots/
+captures/
+debug-html/
+html-*.html
+*-calibrate-*.png
+*-calibrate-*.html
+*-auth-required.png
+*-unverified.png
+*-unsafe.png
+# Only anonymised fixtures under apps/agent/tests/fixtures are meant to be tracked.
+
+# --- local databases / dumps / backups -------------------------------------------
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+*.bak
+pgdata/
+postgres-data/
+backup-*.dump
+backups/
+browser-profile-*.tgz
+*.tgz
+
+# --- python -----------------------------------------------------------------------
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# --- node -------------------------------------------------------------------------
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+
+# --- OS / editors -------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+.vscode/*
+!.vscode/extensions.json
