@@ -48,9 +48,14 @@ async def run_calibration(settings: AgentSettings) -> dict[str, Any]:
                 if not key.startswith(_PAGES[page_name]):
                     continue
                 matches[key] = {s: len(tree.css(s)) for s in spec.css}
+            navigation = browser.last_navigation or {}
+            session = detect_session(html)
             report["pages"][page_name] = {
                 "url": url,
-                "session": str(detect_session(html).status),
+                "final_url": navigation.get("final_url"),
+                "http_status": navigation.get("status"),
+                "session": str(session.status),
+                "error_code": str(session.error_code) if session.error_code else None,
                 "artifacts": artifacts,
                 "selectors": matches,
             }

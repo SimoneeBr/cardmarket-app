@@ -356,3 +356,30 @@ def test_fixture_is_the_anonymised_capture() -> None:
         Path(__file__).parent / "fixtures" / "cardmarket" / "cloudflare_blocked.html"
     ).read_text()
     assert RAY in html and "203.0.113.10" in html
+
+
+@pytest.mark.browser
+async def test_navigation_records_http_status_and_final_url(
+    settings: AgentSettings, blocked_site: FakeSite, caplog: pytest.LogCaptureFixture
+) -> None:
+    from agent.cardmarket.browser.session import BrowserSession
+
+    browser = BrowserSession(settings.model_copy(update={"mock_cardmarket": False}))
+    await browser.start()
+    await browser.page.context.route(
+        "**/*",
+        lambda route: (
+            route.continue_() if route.request.url.startswith("http://127.0.0.1") else route.abort()
+        ),
+    )
+    try:
+        with caplog.at_level("INFO", logger="cmc.agent.browser"):
+            await browser.goto(f"{blocked_site.base_url}/it/Lorcana/Orders/Sales/Paid")
+    finally:
+        await browser.close()
+    assert browser.last_navigation is not None
+    assert browser.last_navigation["status"] == 403
+    assert str(browser.last_navigation["final_url"]).endswith("/it/Lorcana/Orders/Sales/Paid")
+    record = next(r for r in caplog.records if r.getMessage() == "navigation")
+    assert record.http_status == 403  # type: ignore[attr-defined]
+    assert "203.0.113.10" not in str(record.__dict__)

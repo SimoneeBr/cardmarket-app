@@ -44,6 +44,8 @@ class BrowserSession:
         self._page: Page | None = None
         self._headless = settings.headless
         self._tracing = False
+        # Diagnostics of the latest navigation (no body, no client IP).
+        self.last_navigation: dict[str, object] | None = None
 
     # ---------------------------------------------------------- lifecycle
 
@@ -113,8 +115,13 @@ class BrowserSession:
             raise NavigationTimeoutError(f"timeout loading {url}") from exc
         except PlaywrightError as exc:
             raise NetworkError(f"navigation to {url} failed: {exc.message[:200]}") from exc
-        if response is not None and response.status >= 500:
-            raise NetworkError(f"{url} returned HTTP {response.status}")
+        status = response.status if response is not None else None
+        self.last_navigation = {"url": url, "final_url": self.page.url, "status": status}
+        log.info(
+            "navigation", extra={"url": url, "final_url": self.page.url, "http_status": status}
+        )
+        if status is not None and status >= 500:
+            raise NetworkError(f"{url} returned HTTP {status}")
         return await self.content()
 
     async def content(self) -> str:
